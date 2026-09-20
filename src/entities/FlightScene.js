@@ -27,20 +27,55 @@ export class FlightScene {
     // Shooting star for night / twilight flights
     this.shootingStar = new ShootingStar();
 
+    this.touchTargetY = null;
+
     if (this.canvas) {
-      const handleTap = (e) => {
+      const getCanvasPos = (e) => {
         const rect = this.canvas.getBoundingClientRect();
         const scaleX = this.width / rect.width;
         const scaleY = this.height / rect.height;
-        const clickX = (e.clientX - rect.left) * scaleX;
-        const clickY = (e.clientY - rect.top) * scaleY;
+        const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0));
+        const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : 0));
+        return {
+          x: (clientX - rect.left) * scaleX,
+          y: (clientY - rect.top) * scaleY
+        };
+      };
+
+      const handleTap = (e) => {
+        const pos = getCanvasPos(e);
         if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
-          this.shootingStar.handleClickOrTap(clickX, clickY, 0);
+          this.shootingStar.handleClickOrTap(pos.x, pos.y, 0);
         }
       };
+
       this.canvas.addEventListener('click', handleTap);
+
+      // Direct touch steering on flight canvas:
       this.canvas.addEventListener('touchstart', (e) => {
-        if (e.touches && e.touches[0]) handleTap(e.touches[0]);
+        if (e.touches && e.touches[0]) {
+          const pos = getCanvasPos(e.touches[0]);
+          handleTap(e.touches[0]);
+          this.touchTargetY = pos.y;
+        }
+      }, { passive: true });
+
+      this.canvas.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches[0]) {
+          const pos = getCanvasPos(e.touches[0]);
+          this.touchTargetY = pos.y;
+        }
+      }, { passive: true });
+
+      this.canvas.addEventListener('touchend', (e) => {
+        if (e.changedTouches && e.changedTouches[0]) {
+          handleTap(e.changedTouches[0]);
+        }
+        this.touchTargetY = null;
+      }, { passive: true });
+
+      this.canvas.addEventListener('touchcancel', () => {
+        this.touchTargetY = null;
       }, { passive: true });
     }
 
@@ -217,6 +252,13 @@ export class FlightScene {
       const accel = 180;
       if (moveY !== 0) {
         p.vy += moveY * accel * delta;
+      } else if (this.touchTargetY !== null) {
+        const diffY = this.touchTargetY - p.y;
+        if (Math.abs(diffY) > 8) {
+          p.vy += Math.sign(diffY) * accel * delta;
+        } else {
+          p.vy *= 0.85;
+        }
       } else {
         p.vy *= 0.90; // drag damping
       }

@@ -4,11 +4,11 @@ import { SaranskScene } from '../entities/SaranskScene.js?v=20260920_2045';
 import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2045';
 import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2045';
 import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2045';
-import { FlightScene } from '../entities/FlightScene.js?v=20260920_2050';
+import { FlightScene } from '../entities/FlightScene.js?v=20260920_2100';
 import { CosmicFloatingOverlay } from '../entities/CosmicFloatingOverlay.js';
 import { InteractiveCakeStage } from '../entities/InteractiveCakeStage.js';
-import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2050';
-import { PixelInput } from './PixelInput.js';
+import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2100';
+import { PixelInput } from './PixelInput.js?v=20260920_2100';
 import { PixelAudio } from './PixelAudio.js';
 
 /**
@@ -414,25 +414,6 @@ export class Game2D {
 
     window.addEventListener('pointerdown', handleGlobalStarClick, true);
 
-    if (this.canvas) {
-      const handleCanvasTap = (e) => {
-        const rect = this.canvas.getBoundingClientRect();
-        const scaleX = this.width / rect.width;
-        const scaleY = this.height / rect.height;
-        const clickX = (e.clientX - rect.left) * scaleX;
-        const clickY = (e.clientY - rect.top) * scaleY;
-        if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
-          this.shootingStar.handleClickOrTap(clickX, clickY, this.cameraX);
-        }
-      };
-      this.canvas.addEventListener('click', handleCanvasTap);
-      this.canvas.addEventListener('touchstart', (e) => {
-        if (e.touches && e.touches[0]) {
-          handleCanvasTap(e.touches[0]);
-        }
-      }, { passive: true });
-    }
-
     if (this.interactiveBook) {
       this.interactiveBook.addEventListener('click', (e) => {
         if (this.interactiveBook.classList.contains('closed')) {
@@ -658,68 +639,118 @@ export class Game2D {
     }
 
     if (this.canvas) {
-      this.canvas.addEventListener('click', (e) => {
-        if (this.scene) {
-          if (this.scene.showBirthdayLetter) this.scene.showBirthdayLetter = false;
-          if (this.scene.showDepartureLetter) this.scene.showDepartureLetter = false;
+      let lastTouchTime = 0;
 
-          // Calculate click coordinates in game world
-          let clickWorldX = null;
-          if (e && e.clientX !== undefined) {
-            const rect = this.canvas.getBoundingClientRect();
-            const scaleX = this.width / rect.width;
-            clickWorldX = (e.clientX - rect.left) * scaleX + (this.cameraX || 0);
+      const handleCanvasInteraction = (clientX, clientY) => {
+        if (!this.scene) return;
+
+        if (this.scene.showBirthdayLetter) this.scene.showBirthdayLetter = false;
+        if (this.scene.showDepartureLetter) this.scene.showDepartureLetter = false;
+
+        // 1. Calculate click coordinates in game world and screen
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.width / rect.width;
+        const scaleY = this.height / rect.height;
+        const clickScreenX = (clientX - rect.left) * scaleX;
+        const clickScreenY = (clientY - rect.top) * scaleY;
+        const clickWorldX = clickScreenX + (this.cameraX || 0);
+        const clickWorldY = clickScreenY;
+
+        // 2. First priority: Check if tapped on a shooting star!
+        if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
+          if (this.shootingStar.handleClickOrTap(clickScreenX, clickScreenY, this.cameraX)) {
+            return;
           }
+        }
 
-          // Determine target landmark: either activeLandmark, or landmark near click / Alice
-          let targetLm = this.scene.activeLandmark;
-          if (!targetLm && this.scene.landmarks) {
-            for (const lm of this.scene.landmarks) {
-              const nearAlice = Math.abs(this.alice.x - lm.x) < 85;
-              const nearClick = clickWorldX !== null && Math.abs(clickWorldX - lm.x) < 95;
-              if (nearAlice || nearClick) {
-                targetLm = lm;
-                break;
-              }
-            }
-          }
-
-          if (targetLm) {
-            // Toggle inspection
-            if (this.scene.inspectedLandmark && this.scene.inspectedLandmark.id === targetLm.id) {
-              this.scene.inspectedLandmark = null;
-            } else {
-              this.scene.inspectedLandmark = targetLm;
-            }
-
-            // Trigger snapshot for tsum, rgsu, arc_triomf, fox, cathedral, jaffa_clock, or white_city
-            if (targetLm.id === 'tsum' || targetLm.id === 'rgsu' || targetLm.id === 'arc_triomf' || targetLm.id === 'fox' || targetLm.id === 'cathedral' || targetLm.id === 'jaffa_clock' || targetLm.id === 'white_city') {
-              const id = targetLm.id;
-              if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken[id]) {
-                this.scene.snapshotsTaken[id] = true;
-                this.scene.onLandmarkSnapshot(targetLm);
-              }
-            }
-          } else {
-            if (this.scene.inspectedLandmark) this.scene.inspectedLandmark = null;
-          }
-
-          if (this.scene.nearbyCat && this.alice) {
-            const cat = this.scene.nearbyCat;
-            const wasFirstPet = !cat.isPetted;
-            cat.pet(this.alice);
-            if (this.alice.petCat) this.alice.petCat(cat);
-            if (wasFirstPet && this.scene.cats) {
-              const pettedCount = this.scene.cats.filter(c => c.isPetted).length;
-              if (pettedCount === this.scene.cats.length && !this.scene.catsCelebrated) {
-                this.scene.catsCelebrated = true;
-                this.scene.catsToastTimer = 3.6;
-                if (this.audio && this.audio.playChime) this.audio.playChime();
-              }
+        // 3. Second priority: Check if tapped directly on a cat!
+        let tappedCat = null;
+        if (this.scene.cats) {
+          for (const cat of this.scene.cats) {
+            const catX = cat.x;
+            const catY = cat.groundY || 224;
+            // Cat sprite is approx 24x20. Hit area: horizontal radius 45px, vertical radius 50px
+            const distX = Math.abs(clickWorldX - catX);
+            const distY = Math.abs(clickWorldY - catY);
+            if (distX < 45 && distY < 50) {
+              tappedCat = cat;
+              break;
             }
           }
         }
+
+        const catToPet = tappedCat || this.scene.nearbyCat;
+        if (catToPet && this.alice) {
+          const wasFirstPet = !catToPet.isPetted;
+          catToPet.pet(this.alice);
+          if (this.alice.petCat) this.alice.petCat(catToPet);
+          if (wasFirstPet && this.scene.cats) {
+            const pettedCount = this.scene.cats.filter(c => c.isPetted).length;
+            if (pettedCount === this.scene.cats.length && !this.scene.catsCelebrated) {
+              this.scene.catsCelebrated = true;
+              this.scene.catsToastTimer = 3.6;
+              if (this.audio && this.audio.playChime) this.audio.playChime();
+            }
+          }
+          return;
+        }
+
+        // 4. Third priority: Check if tapped directly on a landmark!
+        let targetLm = null;
+        if (this.scene.landmarks) {
+          let nearestLm = null;
+          let minLmDist = 9999;
+          for (const lm of this.scene.landmarks) {
+            const dist = Math.abs(clickWorldX - lm.x);
+            if (dist < minLmDist) {
+              minLmDist = dist;
+              nearestLm = lm;
+            }
+          }
+          // If tap is within 95px of the landmark horizontally:
+          if (nearestLm && minLmDist < 95) {
+            targetLm = nearestLm;
+          } else if (this.scene.activeLandmark) {
+            targetLm = this.scene.activeLandmark;
+          }
+        }
+
+        if (targetLm) {
+          // Toggle inspection
+          if (this.scene.inspectedLandmark && this.scene.inspectedLandmark.id === targetLm.id) {
+            this.scene.inspectedLandmark = null;
+          } else {
+            this.scene.inspectedLandmark = targetLm;
+          }
+
+          // Trigger snapshot if not yet taken
+          const snapshotLandmarks = ['tsum', 'rgsu', 'arc_triomf', 'fox', 'cathedral', 'jaffa_clock', 'white_city'];
+          if (snapshotLandmarks.includes(targetLm.id)) {
+            const id = targetLm.id;
+            if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken[id]) {
+              this.scene.snapshotsTaken[id] = true;
+              this.scene.onLandmarkSnapshot(targetLm);
+            }
+          }
+        } else {
+          if (this.scene.inspectedLandmark) this.scene.inspectedLandmark = null;
+        }
+      };
+
+      this.canvas.addEventListener('click', (e) => {
+        if (performance.now() - lastTouchTime < 450) return; // ignore synthetic click right after touch
+        if (e.clientX !== undefined && e.clientY !== undefined) {
+          handleCanvasInteraction(e.clientX, e.clientY);
+        }
       });
+
+      this.canvas.addEventListener('touchend', (e) => {
+        lastTouchTime = performance.now();
+        if (e.changedTouches && e.changedTouches[0]) {
+          const t = e.changedTouches[0];
+          handleCanvasInteraction(t.clientX, t.clientY);
+        }
+      }, { passive: true });
     }
 
     // Wire Winamp Player controls
@@ -791,6 +822,9 @@ export class Game2D {
       this.audio.crossfadeTo(1, 1.5); // Justin Hurwitz - Coke Room!
     }
     this.setCameraView('full');
+    if (this.touchControls) {
+      this.touchControls.classList.add('flight-mode');
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     const quickflight = urlParams.get('quickflight') === '1';
@@ -852,6 +886,7 @@ export class Game2D {
 
         if (this.flightPageContainer) this.flightPageContainer.classList.add('hidden');
         if (this.gamePageContainer) this.gamePageContainer.classList.remove('hidden');
+        if (this.touchControls) this.touchControls.classList.remove('flight-mode');
         this.setCameraView('left');
       },
       () => {
@@ -1049,6 +1084,7 @@ export class Game2D {
 
         if (this.flightPageContainer) this.flightPageContainer.classList.add('hidden');
         if (this.gamePageContainer) this.gamePageContainer.classList.remove('hidden');
+        if (this.touchControls) this.touchControls.classList.remove('flight-mode');
         this.setCameraView('left');
       },
       () => {
@@ -1082,6 +1118,7 @@ export class Game2D {
 
         if (this.flightPageContainer) this.flightPageContainer.classList.add('hidden');
         if (this.gamePageContainer) this.gamePageContainer.classList.remove('hidden');
+        if (this.touchControls) this.touchControls.classList.remove('flight-mode');
         this.setCameraView('left');
       },
       () => {

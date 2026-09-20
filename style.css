@@ -947,6 +947,15 @@ body.pinterest-desktop {
   transform: translateY(24px) !important;
 }
 
+/* Flight mode toggle: swap ground buttons (◄ / ► / Jump / F) with flight buttons (▲ / ▼) */
+.mobile-touch-controls.flight-mode .touch-ground-only {
+  display: none !important;
+}
+
+.mobile-touch-controls:not(.flight-mode) .touch-flight-only {
+  display: none !important;
+}
+
 .touch-group {
   display: flex;
   pointer-events: auto;

@@ -12,7 +12,7 @@
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
   
-  <link rel="stylesheet" href="./style.css?v=20260920_1955" />
+  <link rel="stylesheet" href="./style.css?v=20260920_2100" />
 </head>
 <body class="pinterest-desktop">
 
@@ -682,12 +682,20 @@
   <!-- RETRO Y2K MOBILE TOUCH CONTROLS -->
   <div id="mobile-touch-controls" class="mobile-touch-controls hidden">
     <div class="touch-group touch-left-group">
-      <button id="touch-left" class="touch-btn touch-btn-dir" aria-label="Влево">◄</button>
-      <button id="touch-right" class="touch-btn touch-btn-dir" aria-label="Вправо">►</button>
+      <!-- Ground controls (◄ / ►) -->
+      <button id="touch-left" class="touch-btn touch-btn-dir touch-ground-only" aria-label="Влево">◄</button>
+      <button id="touch-right" class="touch-btn touch-btn-dir touch-ground-only" aria-label="Вправо">►</button>
+      <!-- Flight controls (▲ / ▼) -->
+      <button id="touch-up" class="touch-btn touch-btn-dir touch-flight-only" aria-label="Вверх">▲</button>
+      <button id="touch-down" class="touch-btn touch-btn-dir touch-flight-only" aria-label="Вниз">▼</button>
     </div>
     <div class="touch-group touch-right-group">
-      <button id="touch-jump" class="touch-btn touch-btn-action" aria-label="Прыжок">▲</button>
-      <button id="touch-action" class="touch-btn touch-btn-action touch-btn-f" aria-label="Действие">F</button>
+      <!-- Ground controls (▲ Jump / F Action) -->
+      <button id="touch-jump" class="touch-btn touch-btn-action touch-ground-only" aria-label="Прыжок">▲</button>
+      <button id="touch-action" class="touch-btn touch-btn-action touch-btn-f touch-ground-only" aria-label="Действие">F</button>
+      <!-- Flight controls (▲ / ▼) -->
+      <button id="touch-flight-up" class="touch-btn touch-btn-action touch-flight-only" aria-label="Вверх">▲</button>
+      <button id="touch-flight-down" class="touch-btn touch-btn-action touch-flight-only" aria-label="Вниз">▼</button>
     </div>
   </div>
 
@@ -696,7 +704,7 @@
   <div id="polaroid-snapshot-container" class="polaroid-snapshot-container"></div>
 
   <!-- Main Game Script Entrypoint -->
-  <script type="module" src="./src/main.js?v=20260920_2050"></script>
+  <script type="module" src="./src/main.js?v=20260920_2100"></script>
 
 </body>
 </html>

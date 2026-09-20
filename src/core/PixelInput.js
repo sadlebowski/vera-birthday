@@ -224,6 +224,26 @@ export class PixelInput {
       this.keys.action = false;
       this.keys.inspect = false;
     });
+
+    const bindUp = (id) => {
+      bindBtn(id, () => {
+        this.keys.up = true;
+      }, () => {
+        this.keys.up = false;
+      });
+    };
+    bindUp('touch-up');
+    bindUp('touch-flight-up');
+
+    const bindDown = (id) => {
+      bindBtn(id, () => {
+        this.keys.down = true;
+      }, () => {
+        this.keys.down = false;
+      });
+    };
+    bindDown('touch-down');
+    bindDown('touch-flight-down');
   }
 
   get isLeft() { return this.keys.left; }
