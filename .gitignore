@@ -30,13 +30,15 @@ fix_white_buildings.py
 update_index_html.py
 
 # Source raw packs and heavy zip archives
-*.zip
-GandalfHardcore Character Asset Pack/
-GandalfHardcore FREE Platformer Assets/
-PACKS/
-PHOTOS/
-raw_israel/
-music/
+/*.zip
+/GandalfHardcore Character Asset Pack/
+/GandalfHardcore FREE Platformer Assets/
+/PACKS/
+/PHOTOS/
+/raw_israel/
+/music/
+/assets/gandalf/
+/public/assets/gandalf/
 
 # System and Editor files
 .vscode/
