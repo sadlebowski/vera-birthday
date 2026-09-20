@@ -9,9 +9,9 @@ export const MEMORIES_CONFIG = {
   // Музыкальный плейлист
   playlist: [
     {
-      title: "Justin Hurwitz - Gold Coast Rhythm (Wallach Party)",
+      title: "Justin Hurwitz - Champagne",
       artist: "Justin Hurwitz",
-      src: "./assets/audio/gold_coast.mp3"
+      src: "./assets/audio/champagne.mp3"
     },
     {
       title: "Justin Hurwitz - Coke Room",
@@ -24,9 +24,9 @@ export const MEMORIES_CONFIG = {
       src: "./assets/audio/manny_and_nellie.mp3"
     },
     {
-      title: "Justin Hurwitz - Champagne",
+      title: "Justin Hurwitz - Gold Coast Rhythm (Wallach Party)",
       artist: "Justin Hurwitz",
-      src: "./assets/audio/champagne.mp3"
+      src: "./assets/audio/gold_coast.mp3"
     },
     {
       title: "Justin Hurwitz - Señor Avocado",

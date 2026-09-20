@@ -11,12 +11,18 @@ export class PixelAudio {
 
     this.audioElementA = new Audio();
     this.audioElementB = new Audio();
+    this.audioElementA.preload = 'auto';
+    this.audioElementB.preload = 'auto';
     this.audioElementA.loop = true;
     this.audioElementB.loop = true;
     this.audioElementA.volume = this.volume;
     this.audioElementB.volume = 0;
     this.currentAudio = this.audioElementA;
     this.fadeInterval = null;
+
+    if (this.playlist.length > 0 && this.playlist[0]?.src) {
+      this.audioElementA.src = this.playlist[0].src;
+    }
 
     // Backward compatibility pointer
     this.audioElement = this.audioElementA;
@@ -55,48 +61,10 @@ export class PixelAudio {
   }
 
   initWinampUI() {
-    this.playBtn = document.getElementById('winamp-play');
-    this.prevBtn = document.getElementById('winamp-prev');
-    this.nextBtn = document.getElementById('winamp-next');
-    this.volSlider = document.getElementById('winamp-vol');
-    this.eqBars = document.querySelectorAll('.eq-bar');
-    this.closeBtn = document.getElementById('winamp-close');
+    this.playBtn = document.getElementById('audio-play');
+    this.volSlider = document.getElementById('audio-volume');
+    this.eqBars = document.querySelectorAll('.winamp-visualizer .bar, .eq-bar');
     this.winampWindow = document.getElementById('winamp-player');
-
-    if (this.playBtn) {
-      this.playBtn.addEventListener('click', () => {
-        this.ensureAudioContext();
-        this.toggle();
-      });
-    }
-
-    if (this.prevBtn) {
-      this.prevBtn.addEventListener('click', () => {
-        this.prev();
-      });
-    }
-
-    if (this.nextBtn) {
-      this.nextBtn.addEventListener('click', () => {
-        this.next();
-      });
-    }
-
-    if (this.volSlider) {
-      this.volSlider.addEventListener('input', (e) => {
-        this.setVolume(parseFloat(e.target.value));
-      });
-    }
-
-    if (this.closeBtn && this.winampWindow) {
-      let minimized = false;
-      this.closeBtn.addEventListener('click', () => {
-        minimized = !minimized;
-        const main = this.winampWindow.querySelector('.winamp-main');
-        if (main) main.style.display = minimized ? 'none' : 'flex';
-        this.closeBtn.textContent = minimized ? '+' : '_';
-      });
-    }
 
     // Animate equalizer bars when playing
     setInterval(() => {
@@ -111,11 +79,15 @@ export class PixelAudio {
 
   async start() {
     this.ensureAudioContext();
-    if (this.isPlaying) return;
+    if (this.isPlaying && !this.currentAudio.paused) return;
 
     if (this.playlist.length > 0 && this.playlist[this.currentTrackIndex]?.src) {
+      const track = this.playlist[this.currentTrackIndex];
       try {
-        this.currentAudio.src = this.playlist[this.currentTrackIndex].src;
+        const cleanSrc = track.src.replace(/^\.\//, '');
+        if (!this.currentAudio.src || !this.currentAudio.src.includes(cleanSrc)) {
+          this.currentAudio.src = track.src;
+        }
         this.currentAudio.volume = this.volume;
         await this.currentAudio.play();
         this.isPlaying = true;
@@ -123,15 +95,12 @@ export class PixelAudio {
         this.updateTrackDisplay();
         return;
       } catch (e) {
-        console.log("Custom MP3 not loaded, playing procedural music box:", e);
+        // Autoplay blocked prior to user interaction
+        this.isPlaying = false;
+        this.updatePlayState();
+        console.log("Audio autoplay pending user gesture:", e.message || e);
       }
     }
-
-    // Procedural chiptune music box fallback
-    this.startMusicBox();
-    this.isPlaying = true;
-    this.updatePlayState();
-    this.updateTrackDisplay();
   }
 
   /**
@@ -238,12 +207,9 @@ export class PixelAudio {
   }
 
   updatePlayState() {
-    if (this.playBtn) {
-      this.playBtn.textContent = this.isPlaying ? '⏸' : '▶';
-    }
-    const navPlayBtn = document.getElementById('audio-play');
-    if (navPlayBtn) {
-      navPlayBtn.textContent = this.isPlaying ? '❚❚' : '▶';
+    const playBtn = document.getElementById('audio-play') || this.playBtn;
+    if (playBtn) {
+      playBtn.textContent = this.isPlaying ? '❚❚' : '▶';
     }
   }
 
@@ -257,23 +223,7 @@ export class PixelAudio {
   }
 
   startMusicBox() {
-    if (this.synthInterval || !this.audioCtx) return;
-
-    // Sweet nostalgic music box notes (Happy Birthday & Lofi Arpeggio)
-    const notes = [
-      261.63, 261.63, 293.66, 261.63, 349.23, 329.63,
-      261.63, 261.63, 293.66, 261.63, 392.00, 349.23,
-      261.63, 261.63, 523.25, 440.00, 349.23, 329.63, 293.66,
-      466.16, 466.16, 440.00, 349.23, 392.00, 349.23
-    ];
-    let noteIdx = 0;
-
-    this.synthInterval = setInterval(() => {
-      if (!this.isPlaying || !this.audioCtx) return;
-      const freq = notes[noteIdx % notes.length];
-      this.playPlink(freq);
-      noteIdx++;
-    }, 420);
+    // Disabled: Justin Hurwitz soundtrack is used exclusively
   }
 
   stopMusicBox() {

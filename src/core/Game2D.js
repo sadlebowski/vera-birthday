@@ -339,8 +339,11 @@ export class Game2D {
     tryPlayInitialMusic();
 
     // 2. Resilient fallback: ensure music begins on the first user interaction anywhere
-    const handleFirstGesture = () => {
-      tryPlayInitialMusic();
+    const handleFirstGesture = async () => {
+      if (this.audio && !this.audio.isPlaying) {
+        this.audio.ensureAudioContext();
+        await this.audio.start().catch(() => {});
+      }
       if (this.audio && this.audio.isPlaying) {
         window.removeEventListener('pointerdown', handleFirstGesture);
         window.removeEventListener('click', handleFirstGesture);
