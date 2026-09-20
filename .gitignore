@@ -10,8 +10,8 @@ humble_*.png
 preview_*.png
 test_*.png
 scratch_test_*.png
-*.jpg
-*.mp3
+/*.jpg
+/*.mp3
 *.bat
 *.ps1
 generate_*.py
