@@ -1,13 +1,13 @@
 import { MEMORIES_CONFIG } from '../config/memories.js';
 import { PixelAlice } from '../entities/PixelAlice.js';
 import { SaranskScene } from '../entities/SaranskScene.js';
-import { MoscowScene } from '../entities/MoscowScene.js';
+import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_1950';
 import { IsraelScene } from '../entities/IsraelScene.js';
 import { BarcelonaScene } from '../entities/BarcelonaScene.js';
-import { FlightScene } from '../entities/FlightScene.js';
+import { FlightScene } from '../entities/FlightScene.js?v=20260920_1950';
 import { CosmicFloatingOverlay } from '../entities/CosmicFloatingOverlay.js';
 import { InteractiveCakeStage } from '../entities/InteractiveCakeStage.js';
-import { ShootingStar } from '../entities/ShootingStar.js';
+import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_1950';
 import { PixelInput } from './PixelInput.js';
 import { PixelAudio } from './PixelAudio.js';
 
@@ -368,6 +368,13 @@ export class Game2D {
     window.addEventListener('touchstart', handleFirstGesture, { passive: true });
     window.addEventListener('keydown', handleFirstGesture, { passive: true });
 
+    // Global catch for shooting star on click/tap anywhere on screen
+    window.addEventListener('pointerdown', () => {
+      if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
+        this.shootingStar.catch();
+      }
+    }, true);
+
     if (this.canvas) {
       const handleCanvasTap = (e) => {
         if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
@@ -614,18 +621,52 @@ export class Game2D {
     }
 
     if (this.canvas) {
-      this.canvas.addEventListener('click', () => {
+      this.canvas.addEventListener('click', (e) => {
         if (this.scene) {
           if (this.scene.showBirthdayLetter) this.scene.showBirthdayLetter = false;
           if (this.scene.showDepartureLetter) this.scene.showDepartureLetter = false;
-          if (this.scene.inspectedLandmark) this.scene.inspectedLandmark = null;
-          if (this.scene.activeLandmark && (this.scene.activeLandmark.id === 'tsum' || this.scene.activeLandmark.id === 'rgsu')) {
-            const id = this.scene.activeLandmark.id;
-            if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken[id]) {
-              this.scene.snapshotsTaken[id] = true;
-              this.scene.onLandmarkSnapshot(this.scene.activeLandmark);
+
+          // Calculate click coordinates in game world
+          let clickWorldX = null;
+          if (e && e.clientX !== undefined) {
+            const rect = this.canvas.getBoundingClientRect();
+            const scaleX = this.width / rect.width;
+            clickWorldX = (e.clientX - rect.left) * scaleX + (this.cameraX || 0);
+          }
+
+          // Determine target landmark: either activeLandmark, or landmark near click / Alice
+          let targetLm = this.scene.activeLandmark;
+          if (!targetLm && this.scene.landmarks) {
+            for (const lm of this.scene.landmarks) {
+              const nearAlice = Math.abs(this.alice.x - lm.x) < 85;
+              const nearClick = clickWorldX !== null && Math.abs(clickWorldX - lm.x) < 95;
+              if (nearAlice || nearClick) {
+                targetLm = lm;
+                break;
+              }
             }
           }
+
+          if (targetLm) {
+            // Toggle inspection
+            if (this.scene.inspectedLandmark && this.scene.inspectedLandmark.id === targetLm.id) {
+              this.scene.inspectedLandmark = null;
+            } else {
+              this.scene.inspectedLandmark = targetLm;
+            }
+
+            // Trigger snapshot for tsum or rgsu
+            if (targetLm.id === 'tsum' || targetLm.id === 'rgsu') {
+              const id = targetLm.id;
+              if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken[id]) {
+                this.scene.snapshotsTaken[id] = true;
+                this.scene.onLandmarkSnapshot(targetLm);
+              }
+            }
+          } else {
+            if (this.scene.inspectedLandmark) this.scene.inspectedLandmark = null;
+          }
+
           if (this.scene.nearbyCat && this.alice) {
             const cat = this.scene.nearbyCat;
             const wasFirstPet = !cat.isPetted;

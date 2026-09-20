@@ -1,4 +1,4 @@
-import { Game2D } from './core/Game2D.js';
+import { Game2D } from './core/Game2D.js?v=20260920_1950';
 
 function start() {
   if (window.__ALICE_GAME__) return;

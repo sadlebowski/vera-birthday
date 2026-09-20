@@ -206,7 +206,7 @@ export class ShootingStar {
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
 
-      const promptText = '[ ПРОБЕЛ — ЗАГАДАТЬ ЖЕЛАНИЕ ]';
+      const promptText = '[ КЛИК — ЧТОБЫ ПОЙМАТЬ ]';
       const promptX = viewportWidth / 2;
       const promptY = 16;
 

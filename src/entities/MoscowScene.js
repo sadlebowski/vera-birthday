@@ -697,7 +697,7 @@ export class MoscowScene {
     }
 
     let nearest = null;
-    let minDist = 32;
+    let minDist = 70;
 
     for (const lm of this.landmarks) {
       const dist = Math.abs(alice.x - lm.x);
@@ -712,6 +712,16 @@ export class MoscowScene {
     // Handle [ F ] inspection
     if (input && input.consumeInspect() && this.activeLandmark) {
       if (this.audio) this.audio.playInteract();
+
+      // Trigger polaroid photo for TSUM or RGSU if not yet taken
+      if (this.activeLandmark.id === 'tsum' || this.activeLandmark.id === 'rgsu') {
+        const id = this.activeLandmark.id;
+        if (this.onLandmarkSnapshot && !this.snapshotsTaken[id]) {
+          this.snapshotsTaken[id] = true;
+          this.onLandmarkSnapshot(this.activeLandmark);
+        }
+      }
+
       if (this.inspectedLandmark && this.inspectedLandmark.id === this.activeLandmark.id) {
         // Toggle off
         this.inspectedLandmark = null;
@@ -720,13 +730,6 @@ export class MoscowScene {
         }
       } else {
         this.inspectedLandmark = this.activeLandmark;
-        if (this.activeLandmark.id === 'tsum' || this.activeLandmark.id === 'rgsu') {
-          const id = this.activeLandmark.id;
-          if (this.onLandmarkSnapshot && !this.snapshotsTaken[id]) {
-            this.snapshotsTaken[id] = true;
-            this.onLandmarkSnapshot(this.activeLandmark);
-          }
-        }
         if (this.activeLandmark.type === 'departure') {
           if (this.departurePlane.state === 'waiting') {
             this.departurePlane.state = 'boarding';
