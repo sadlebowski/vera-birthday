@@ -1,0 +1,45 @@
+# Python & temporary test files
+__pycache__/
+*.pyc
+scratch/
+temp_downloads/
+temp_preview/
+
+# Root test images & generator scripts (not needed for web runtime)
+humble_*.png
+preview_*.png
+test_*.png
+scratch_test_*.png
+*.jpg
+*.mp3
+*.bat
+*.ps1
+generate_*.py
+process_*.py
+prepare_*.py
+download_*.py
+take_*.py
+verify_*.py
+test_*.py
+export_*.py
+inspect_*.py
+resize*.ps1
+prep*.ps1
+build_pink_scrapbook.py
+fix_white_buildings.py
+update_index_html.py
+
+# Source raw packs and heavy zip archives
+*.zip
+GandalfHardcore Character Asset Pack/
+GandalfHardcore FREE Platformer Assets/
+PACKS/
+PHOTOS/
+raw_israel/
+music/
+
+# System and Editor files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

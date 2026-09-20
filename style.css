@@ -1,0 +1,1299 @@
+/* ==========================================================================
+   PINK & WHITE SCRAPBOOK MOODBOARD & INTERACTIVE GREETING CARD BOOKLET
+   ========================================================================== */
+
+:root {
+  --pink-lightest: #fff5fa;
+  --pink-bg: #ffeaf3;
+  --pink-pastel: #ffccd8;
+  --pink-accent: #ff7ebb;
+  --pink-vibrant: #ff4081;
+  --pink-deep: #8a2456;
+  --card-white: #ffffff;
+  --card-shadow: rgba(255, 105, 180, 0.28);
+  --card-border: #ffd3e2;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+body.pinterest-desktop {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  background-color: var(--pink-bg);
+  background-image: 
+    radial-gradient(circle at 15% 15%, #ffffff 0%, transparent 60%),
+    radial-gradient(circle at 85% 85%, #ffd1e6 0%, transparent 60%),
+    radial-gradient(circle at 50% 50%, #fff0f7 0%, transparent 70%),
+    repeating-linear-gradient(45deg, rgba(255, 182, 217, 0.12) 0px, rgba(255, 182, 217, 0.12) 1px, transparent 1px, transparent 18px);
+  font-family: 'VT323', monospace;
+  color: #3d142b;
+  overflow: hidden;
+  position: relative;
+}
+
+/* CRT Scanlines & Soft Pastel Vignette Filter */
+#crt-scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(0deg, rgba(255, 126, 187, 0.03), rgba(255, 126, 187, 0.03) 2px, transparent 2px, transparent 4px);
+}
+
+#crt-vignette {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 99;
+  background: radial-gradient(circle at center, transparent 60%, rgba(255, 140, 185, 0.25) 100%);
+}
+
+/* ==========================================================================
+   CHAOTIC OVERLAPPING PINTEREST / SCRAPBOOK WALL (100% GAP-FREE COVERAGE)
+   ========================================================================== */
+
+.pinterest-wall {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+.scrapbook-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.scrapbook-card {
+  position: absolute;
+  background: var(--card-white);
+  padding: 10px 10px 22px 10px;
+  border-radius: 5px;
+  border: 1.5px solid var(--card-border);
+  box-shadow: 
+    0 14px 32px var(--card-shadow),
+    0 3px 8px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 0.24s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.24s ease, z-index 0.1s;
+  overflow: visible;
+}
+
+.scrapbook-card:hover {
+  transform: scale(1.22) rotate(0deg) !important;
+  z-index: 999 !important;
+  box-shadow: 
+    0 24px 50px rgba(255, 64, 129, 0.42),
+    0 0 25px rgba(255, 126, 187, 0.55);
+  border-color: var(--pink-vibrant);
+}
+
+.polaroid-photo-wrapper {
+  width: 100%;
+  aspect-ratio: 1.45;
+  background: #fff8fc;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.polaroid-photo-wrapper img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.polaroid-photo-wrapper img.photo-real {
+  image-rendering: auto !important;
+  image-rendering: smooth !important;
+}
+
+.washi-tape {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  width: 72px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(2px);
+  border: 1.5px dashed rgba(255, 126, 187, 0.45);
+  box-shadow: 0 3px 8px rgba(255, 105, 180, 0.25);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   CENTERPIECE: CRISP WHITE DESIGNER ENVELOPE (HIGH CONTRAST ON PINK WALL)
+   ========================================================================== */
+
+#envelope-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  perspective: 1400px;
+  pointer-events: none;
+}
+
+.physical-envelope {
+  pointer-events: auto;
+  position: relative;
+  width: 380px;
+  height: 250px;
+  background: #ffffff !important;
+  border-radius: 8px;
+  border: 2px solid #ffffff !important;
+  box-shadow: 
+    0 30px 80px rgba(0, 0, 0, 0.20),
+    0 0 50px rgba(255, 255, 255, 0.95),
+    0 12px 35px rgba(255, 105, 180, 0.3) !important;
+  cursor: pointer;
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+  animation: envelopeIdle 5s ease-in-out infinite alternate;
+}
+
+.physical-envelope:hover {
+  transform: translateY(-8px) scale(1.05) rotate(-0.5deg);
+  box-shadow: 
+    0 40px 95px rgba(0, 0, 0, 0.25),
+    0 0 65px rgba(255, 255, 255, 1.0),
+    0 15px 45px rgba(255, 64, 129, 0.45) !important;
+}
+
+@keyframes envelopeIdle {
+  0% { transform: translateY(0) rotate(0deg); }
+  100% { transform: translateY(-6px) rotate(0.8deg); }
+}
+
+/* Pure White Envelope Flap */
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 190px solid transparent;
+  border-right: 190px solid transparent;
+  border-top: 130px solid #fdfdfd;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.15));
+  transform-origin: top center;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+/* White Envelope Pockets */
+.envelope-pocket-left {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 190px solid #f9f9f9;
+  border-top: 125px solid transparent;
+  border-bottom: 125px solid #f9f9f9;
+  border-bottom-left-radius: 8px;
+  z-index: 2;
+}
+
+.envelope-pocket-right {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-right: 190px solid #f9f9f9;
+  border-top: 125px solid transparent;
+  border-bottom: 125px solid #f9f9f9;
+  border-bottom-right-radius: 8px;
+  z-index: 2;
+}
+
+.envelope-pocket-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 190px solid transparent;
+  border-right: 190px solid transparent;
+  border-bottom: 135px solid #f3f3f3;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  z-index: 3;
+}
+
+/* Wax Seal Centerpiece (Vibrant Ruby Heart) */
+.wax-seal {
+  position: absolute;
+  top: 105px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(circle at 35% 35%, #ff4d88, #e6005c 65%, #99003d 100%);
+  border-radius: 50%;
+  box-shadow: 
+    0 6px 18px rgba(230, 0, 92, 0.45),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.35);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.physical-envelope:hover .wax-seal {
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+.seal-ring {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px dashed rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.seal-symbol {
+  font-size: 22px;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(153, 0, 61, 0.8);
+}
+
+.seal-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 77, 136, 0.45) 0%, transparent 70%);
+  pointer-events: none;
+  animation: sealPulse 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes sealPulse {
+  0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.35; }
+  100% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.85; }
+}
+
+.envelope-tag-hint {
+  position: absolute;
+  bottom: -36px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border: 1.5px solid #ff4081;
+  padding: 4px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #d81b60;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Opening State */
+.physical-envelope.opening {
+  animation: none;
+  transform-origin: left center;
+  transform: scale(0.9) rotateY(-110deg) translateY(20px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease-in;
+}
+
+.physical-envelope.opening .envelope-flap {
+  transform: rotateX(180deg);
+}
+
+.physical-envelope.opening .wax-seal {
+  transform: translate(-50%, -50%) scale(1.4);
+  opacity: 0;
+}
+
+/* ==========================================================================
+   VINTAGE LEATHER BOOK (POCKET INVENTORY STYLE)
+   ========================================================================== */
+
+/* ==========================================================================
+   AUTHENTIC IN-PLACE HUMBLE PIXEL VINTAGE BOOK & GAMEPLAY STAGE
+   ========================================================================== */
+
+#envelope-stage.book-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+  perspective: 1600px;
+  pointer-events: none;
+}
+
+.vintage-book-container {
+  pointer-events: auto;
+  position: relative;
+  width: min(1360px, 94vw, calc(86vh * 650 / 430));
+  aspect-ratio: 650 / 430;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  transform-origin: center center;
+  transition: transform 0.85s cubic-bezier(0.25, 1, 0.35, 1);
+}
+
+.vintage-book-container.closed {
+  cursor: pointer;
+  animation: bookHover 5s ease-in-out infinite alternate;
+}
+
+.vintage-book-container.closed:hover {
+  transform: translateY(-6px) scale(1.03);
+}
+
+@keyframes bookHover {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); }
+}
+
+/* Authentic Humble Pixel Book Surface (Smooth in-place frame animation) */
+.book-surface-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  z-index: 1;
+  filter: drop-shadow(0 25px 60px rgba(0, 0, 0, 0.75))
+          drop-shadow(0 0 35px rgba(255, 126, 187, 0.3));
+}
+
+.book-tag-hint {
+  position: absolute;
+  bottom: clamp(-38px, -5vh, -44px) !important;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Handjet', monospace !important;
+  font-size: clamp(17px, 4.2vw, 26px) !important;
+  font-weight: 900 !important;
+  letter-spacing: clamp(1px, 0.4vw, 3px) !important;
+  color: #ffffff !important;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0 8px !important;
+  max-width: 94vw !important;
+  text-align: center !important;
+  text-shadow:
+    2px 2px 0 #000000,
+    -1px -1px 0 #000000,
+    1px -1px 0 #000000,
+    -1px 1px 0 #000000,
+    0 2px 8px rgba(0, 0, 0, 0.8) !important;
+  white-space: nowrap;
+  z-index: 20;
+  pointer-events: none;
+  animation: hintBlink 2.5s ease-in-out infinite;
+}
+
+@keyframes hintBlink {
+  0%, 100% { opacity: 0.95; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 0.65; transform: translateX(-50%) translateY(-2px); }
+}
+
+.vintage-book-container.open .book-tag-hint {
+  display: none !important;
+}
+
+/* Book Spread Interactive Content */
+.book-spread-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.book-spread-content.hidden {
+  display: none !important;
+}
+
+/* Dynamic Camera View Across Book Pages (Keeps authentic open book spread fully framed) */
+.vintage-book-container.open.view-left-page,
+.vintage-book-container.open.view-right-page,
+.vintage-book-container.open.view-full-spread {
+  transform: scale(1.0) translate(0, 0);
+}
+
+/* Corner Bookmark Close Button */
+.card-close-btn {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  z-index: 120;
+  background: #fff0f7;
+  border: 1.5px solid #ff7ebb;
+  color: #ff4081;
+  font-family: monospace;
+  font-size: 15px;
+  font-weight: bold;
+  width: 28px;
+  height: 28px;
+  line-height: 24px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.card-close-btn:hover {
+  background: #ff4081;
+  color: #fff;
+  transform: scale(1.15);
+}
+
+/* Page 1 & Page 2 Containers sitting precisely inside the decorative filigree border of frame_4.png */
+.booklet-page-container,
+.flight-page-container {
+  position: absolute;
+  top: 8.6%;
+  left: 2.15%;
+  width: 95.7%;
+  height: 83.0%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  z-index: 50;
+  background: transparent !important;
+}
+
+.flight-page-container.hidden,
+.booklet-page-container.hidden {
+  display: none !important;
+}
+
+#pixel-canvas,
+#flight-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  background-color: transparent !important;
+}
+
+/* Page Flip Overlay Player */
+.book-page-flip-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 85;
+  pointer-events: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.book-page-flip-player.hidden {
+  display: none !important;
+}
+
+
+
+.full-flight-sky {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 270px;
+  background: linear-gradient(180deg, #090414 0%, #15092a 35%, #351347 70%, #681f4a 95%, #913451 100%);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flight-twilight-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(255, 120, 160, 0.25), transparent);
+  pointer-events: none;
+}
+
+.flight-stars-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background-image: 
+    radial-gradient(1.5px 1.5px at 40px 60px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 120px 140px, #ffd3e2, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 240px 50px, #fff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 320px 180px, #ffeb3b, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 450px 90px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 560px 130px, #ffeef8, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 680px 40px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 780px 160px, #ff7ebb, rgba(0,0,0,0));
+  background-repeat: repeat-x;
+  background-size: 800px 220px;
+  animation: starsDrift 50s linear infinite;
+}
+
+@keyframes starsDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-800px); }
+}
+
+.flight-clouds-layer {
+  position: absolute;
+  top: 15%;
+  left: 0;
+  width: 200%;
+  height: 65%;
+  background-image: radial-gradient(ellipse 90px 35px at 100px 60px, rgba(255, 180, 210, 0.2), transparent 70%),
+                    radial-gradient(ellipse 130px 45px at 320px 90px, rgba(255, 160, 200, 0.24), transparent 70%),
+                    radial-gradient(ellipse 110px 40px at 580px 50px, rgba(230, 140, 190, 0.2), transparent 70%),
+                    radial-gradient(ellipse 140px 50px at 820px 80px, rgba(255, 170, 210, 0.22), transparent 70%);
+  background-repeat: repeat-x;
+  background-size: 900px 180px;
+  animation: cloudsDrift 16s linear infinite;
+}
+
+.flight-clouds-foreground {
+  position: absolute;
+  bottom: 0%;
+  left: 0;
+  width: 200%;
+  height: 45%;
+  background-image: radial-gradient(ellipse 160px 55px at 150px 70px, rgba(255, 140, 180, 0.28), transparent 70%),
+                    radial-gradient(ellipse 180px 60px at 550px 80px, rgba(240, 120, 170, 0.26), transparent 70%),
+                    radial-gradient(ellipse 150px 50px at 900px 60px, rgba(255, 150, 190, 0.27), transparent 70%);
+  background-repeat: repeat-x;
+  background-size: 1000px 160px;
+  animation: cloudsDriftFast 9s linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes cloudsDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-900px); }
+}
+
+@keyframes cloudsDriftFast {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-1000px); }
+}
+
+.flight-plane-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: flightCruising 10s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes flightCruising {
+  0% {
+    transform: translateX(-50px) translateY(18px) rotate(-3deg) scale(0.92);
+  }
+  25% {
+    transform: translateX(-15px) translateY(-6px) rotate(1deg) scale(1.0);
+  }
+  50% {
+    transform: translateX(10px) translateY(-14px) rotate(2deg) scale(1.03);
+  }
+  75% {
+    transform: translateX(30px) translateY(-4px) rotate(0deg) scale(1.01);
+  }
+  90% {
+    transform: translateX(45px) translateY(16px) rotate(4deg) scale(0.98);
+  }
+  100% {
+    transform: translateX(60px) translateY(32px) rotate(5deg) scale(0.95);
+  }
+}
+
+.in-flight-plane {
+  width: 220px;
+  max-width: 75vw;
+  height: auto;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.6));
+}
+
+.nav-beacon {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.beacon-red {
+  top: 40%;
+  left: 58%;
+  background: #ff1744;
+  box-shadow: 0 0 10px #ff1744;
+  animation: beaconBlink 1s infinite alternate;
+}
+
+.beacon-green {
+  bottom: 26%;
+  left: 52%;
+  background: #00e676;
+  box-shadow: 0 0 10px #00e676;
+  animation: beaconBlink 1s infinite alternate 0.5s;
+}
+
+.beacon-strobe {
+  top: 13%;
+  left: 8%;
+  background: #ffffff;
+  box-shadow: 0 0 12px #ffffff;
+  animation: strobeFlash 1.2s infinite steps(1);
+}
+
+@keyframes beaconBlink {
+  0% { opacity: 0.2; transform: scale(0.7); }
+  100% { opacity: 1; transform: scale(1.3); }
+}
+
+@keyframes strobeFlash {
+  0%, 85% { opacity: 0; }
+  86%, 95% { opacity: 1; transform: scale(1.5); }
+  96%, 100% { opacity: 0; }
+}
+
+.flight-city-lights-distant {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 25px;
+  background-image: radial-gradient(1.5px 1.5px at 15px 12px, #ffeb3b, transparent),
+                    radial-gradient(1.5px 1.5px at 45px 18px, #ff5722, transparent),
+                    radial-gradient(2px 2px at 80px 10px, #00e5ff, transparent),
+                    radial-gradient(1.5px 1.5px at 120px 15px, #e040fb, transparent),
+                    radial-gradient(2px 2px at 170px 8px, #ffea00, transparent),
+                    radial-gradient(1.5px 1.5px at 230px 14px, #ff4081, transparent);
+  background-repeat: repeat-x;
+  background-size: 260px 25px;
+  opacity: 0;
+  animation: cityLightsApproach 10s cubic-bezier(0.7, 0, 1, 1) forwards;
+}
+
+@keyframes cityLightsApproach {
+  0%, 55% { opacity: 0; transform: translateY(10px); }
+  85% { opacity: 0.6; transform: translateY(3px); }
+  100% { opacity: 0.95; transform: translateY(0); }
+}
+
+
+/* ==========================================================================
+   MINIMALIST RETRO WINAMP PLAYER (CUTE PINK & WHITE Y2K EDITION)
+   ========================================================================== */
+
+.winamp-box {
+  position: fixed;
+  bottom: 12px;
+  left: 12px;
+  z-index: 90;
+  background: #fff5fa;
+  border: 2px solid #ff7ebb;
+  width: 165px;
+  box-shadow: 0 8px 25px rgba(255, 105, 180, 0.35);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.winamp-titlebar {
+  background: linear-gradient(90deg, #ff7ebb, #ff4081);
+  padding: 3px 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: #ffffff;
+  border-bottom: 1px solid #ffccd8;
+  font-weight: bold;
+}
+
+.win-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-family: monospace;
+}
+
+.winamp-display {
+  background: #ffe6f2;
+  padding: 4px 8px;
+  border-bottom: 1px solid #ffd0e3;
+}
+
+.winamp-track {
+  display: none !important;
+}
+
+.winamp-visualizer {
+  display: flex;
+  gap: 2px;
+  margin-top: 4px;
+  height: 8px;
+  align-items: flex-end;
+}
+
+.winamp-visualizer .bar {
+  flex: 1;
+  background: #ff4081;
+  height: 20%;
+  animation: eqAnim 0.6s infinite alternate ease-in-out;
+}
+
+.winamp-visualizer .bar:nth-child(2) { animation-delay: 0.1s; background: #ff7ebb; }
+.winamp-visualizer .bar:nth-child(3) { animation-delay: 0.3s; background: #ff9ec9; }
+.winamp-visualizer .bar:nth-child(4) { animation-delay: 0.2s; background: #ff4081; }
+.winamp-visualizer .bar:nth-child(5) { animation-delay: 0.4s; background: #ff7ebb; }
+.winamp-visualizer .bar:nth-child(6) { animation-delay: 0.15s; background: #ff9ec9; }
+
+@keyframes eqAnim {
+  0% { height: 15%; }
+  100% { height: 95%; }
+}
+
+.winamp-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 6px;
+  background: #ffffff;
+}
+
+.winamp-btn {
+  background: #ffeaf3;
+  border: 1px solid #ff7ebb;
+  color: #d81b60;
+  font-size: 11px;
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: 2px;
+  font-weight: bold;
+}
+
+.winamp-btn:hover {
+  background: #ff7ebb;
+  color: #ffffff;
+}
+
+.volume-slider-box {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  margin-left: 4px;
+}
+
+.volume-slider-box input[type=range] {
+  width: 100%;
+  height: 4px;
+  accent-color: #ff4081;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   MOBILE TOUCH CONTROLS & ORIENTATION TIP
+   ========================================================================== */
+
+#pixel-canvas,
+#flight-canvas,
+#cosmic-canvas,
+#grand-cake-canvas {
+  touch-action: none;
+}
+
+.orientation-hint {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top, 12px));
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1.5px solid #ff7ebb;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-family: 'Handjet', monospace;
+  font-size: clamp(14px, 3.8vw, 17px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #d81b60;
+  box-shadow: 0 4px 16px rgba(255, 105, 180, 0.3);
+  z-index: 200;
+  pointer-events: auto;
+  cursor: pointer;
+  white-space: nowrap;
+  animation: orientationPulse 3s ease-in-out infinite;
+  display: none;
+}
+
+@keyframes orientationPulse {
+  0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.95; }
+  50% { transform: translateX(-50%) translateY(-3px); opacity: 0.75; }
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  .orientation-hint {
+    display: flex;
+    align-items: center;
+    top: max(12px, env(safe-area-inset-top, 12px));
+    right: max(12px, env(safe-area-inset-right, 12px));
+    left: auto;
+    transform: none;
+    padding: 5px 12px;
+    font-size: 15px;
+  }
+}
+
+@media (orientation: landscape) {
+  .orientation-hint {
+    display: none !important;
+  }
+}
+
+/* Retro Y2K Mobile Touch Controls Layer */
+.mobile-touch-controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  pointer-events: none;
+  z-index: 120;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.mobile-touch-controls.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(24px) !important;
+}
+
+.touch-group {
+  display: flex;
+  pointer-events: auto;
+}
+
+.touch-left-group {
+  position: absolute;
+  bottom: max(14px, env(safe-area-inset-bottom, 14px));
+  left: max(14px, env(safe-area-inset-left, 14px));
+  gap: 10px;
+}
+
+.touch-right-group {
+  position: absolute;
+  bottom: max(14px, env(safe-area-inset-bottom, 14px));
+  right: max(14px, env(safe-area-inset-right, 14px));
+  gap: 10px;
+}
+
+.touch-btn {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 126, 187, 0.9);
+  color: #d81b60;
+  font-family: 'Handjet', monospace;
+  font-size: 24px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(255, 105, 180, 0.35), inset 0 0 10px rgba(255, 255, 255, 0.85);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: none;
+  outline: none;
+  cursor: pointer;
+  transition: transform 0.08s ease, background-color 0.08s ease, box-shadow 0.08s ease;
+}
+
+.touch-btn:active, .touch-btn.active {
+  transform: scale(0.90);
+  background: #ff4081;
+  color: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 0 20px rgba(255, 64, 129, 0.8);
+}
+
+.touch-btn-dir {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.touch-btn-action {
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+}
+
+.touch-btn-f {
+  font-weight: 900;
+  color: #ff4081;
+}
+
+/* Hide on desktop when mouse is used on wide screen */
+@media (hover: hover) and (pointer: fine) and (min-width: 1025px) {
+  .mobile-touch-controls {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   RESPONSIVE ADJUSTMENTS
+   ========================================================================== */
+
+@media (max-width: 900px) {
+  .scrapbook-card {
+    width: 110px !important;
+    padding: 6px 6px 14px 6px !important;
+  }
+  .polaroid-photo-wrapper {
+    height: 75px !important;
+  }
+  .touch-left-group {
+    bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
+    left: max(12px, env(safe-area-inset-left, 12px)) !important;
+    gap: 8px !important;
+  }
+  .touch-right-group {
+    bottom: max(12px, env(safe-area-inset-bottom, 12px)) !important;
+    right: max(12px, env(safe-area-inset-right, 12px)) !important;
+    gap: 8px !important;
+  }
+  .touch-btn {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 20px !important;
+  }
+  .touch-btn-action {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 22px !important;
+  }
+  .winamp-box {
+    top: max(10px, env(safe-area-inset-top, 10px)) !important;
+    left: max(10px, env(safe-area-inset-left, 10px)) !important;
+    bottom: auto !important;
+    transform: scale(0.85);
+    transform-origin: top left;
+    z-index: 130;
+  }
+  .vintage-book-container {
+    width: min(96vw, calc(90vh * 650 / 430));
+  }
+}
+
+@media (max-height: 500px) and (orientation: landscape) {
+  /* On phone in landscape (e.g. 844x390, 800x360), fit book height beautifully */
+  .vintage-book-container {
+    height: 92vh !important;
+    width: calc(92vh * 650 / 430) !important;
+    max-width: 96vw !important;
+  }
+  .mobile-touch-controls {
+    bottom: max(8px, env(safe-area-inset-bottom, 8px));
+    padding: 0 max(12px, env(safe-area-inset-left, 12px)) 0 max(12px, env(safe-area-inset-right, 12px));
+  }
+  .touch-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+  }
+  .touch-btn-action {
+    width: 54px;
+    height: 54px;
+    font-size: 24px;
+  }
+}
+
+/* ==========================================================================
+   ZERO-G SCRAPBOOK SPACE JUMP & HYPERSPACE DIVE
+   ========================================================================== */
+
+.cosmic-stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 150;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cosmic-stage.hidden {
+  display: none !important;
+}
+
+#cosmic-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.cosmic-title-hint {
+  display: none !important;
+}
+
+/* First-Person Hyperspace Dive Dispersal */
+.pinterest-wall.hyperspace-dive {
+  transform: scale(4.8) translateZ(800px) !important;
+  filter: blur(8px) brightness(1.3) !important;
+  opacity: 0 !important;
+  transition: transform 3.0s cubic-bezier(0.1, 0, 0.2, 1), filter 2.5s ease, opacity 2.8s ease-in !important;
+  pointer-events: none !important;
+}
+
+/* ==========================================================================
+   GRAND 26-CANDLE BIRTHDAY CAKE FINALE STAGE
+   ========================================================================== */
+
+.grand-cake-stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 250;
+  background-color: #06020a;
+  overflow: hidden;
+  user-select: none;
+}
+
+.grand-cake-stage.hidden {
+  display: none !important;
+}
+
+#grand-cake-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: default;
+}
+
+.cake-ui-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Instruction Banner - Hidden per strict user request */
+.cake-instruction-banner {
+  display: none !important;
+}
+
+.cake-prompt-main {
+  font-family: 'Handjet', monospace;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: #fff0f7;
+}
+
+.cake-candles-counter {
+  display: none !important;
+}
+
+/* Celebration Banner - Centered in middle of screen, Clean, No Neon Glow, No Icons */
+.cake-celebration-banner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  z-index: 300;
+  width: 96vw;
+  animation: bannerCenterEntrance 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.cake-celebration-banner.hidden {
+  display: none !important;
+}
+
+@keyframes bannerCenterEntrance {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.0);
+  }
+}
+
+.celebration-title {
+  font-family: 'Handjet', monospace;
+  font-size: clamp(44px, 7.5vw, 82px);
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: #ffffff;
+  white-space: nowrap;
+  user-select: none;
+  /* Crisp retro pixel dark outline, strictly NO neon glow */
+  text-shadow:
+    3px 3px 0 #100418,
+    -2px -2px 0 #100418,
+    2px -2px 0 #100418,
+    -2px 2px 0 #100418,
+    0 4px 16px rgba(0, 0, 0, 0.9);
+}
+
+.celebration-title .pixel-excl {
+  display: inline-block;
+  position: relative;
+  width: 0.22em;
+  height: 0.88em;
+  vertical-align: 0.05em;
+  margin-left: 0.06em;
+  color: transparent;
+}
+
+.celebration-title .pixel-excl::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 65%;
+  background: #ffffff;
+  box-shadow:
+    3px 3px 0 #100418,
+    -2px -2px 0 #100418,
+    2px -2px 0 #100418,
+    -2px 2px 0 #100418;
+}
+
+.celebration-title .pixel-excl::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 22%;
+  background: #ffffff;
+  box-shadow:
+    3px 3px 0 #100418,
+    -2px -2px 0 #100418,
+    2px -2px 0 #100418,
+    -2px 2px 0 #100418;
+}
+
+.celebration-subtitle,
+.celebration-actions {
+  display: none !important;
+}
+
+.cake-btn.secondary {
+  background: rgba(35, 14, 48, 0.85);
+  border: 1.5px solid #ab47bc;
+  color: #e1bee7;
+}
+
+.cake-btn.secondary:hover {
+  background: rgba(60, 22, 80, 0.95);
+  border-color: #ce93d8;
+  color: #ffffff;
+}
+
