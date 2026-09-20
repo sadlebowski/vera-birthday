@@ -117,6 +117,9 @@ export class Game2D {
         this.alice.x = -140;
         this.alice.y = this.scene.aliceGroundY || 224;
       }
+      this.scene.onLandmarkSnapshot = (lm) => {
+        this.triggerPolaroidSnapshot(lm);
+      };
       this.scene.onTakeoffComplete = () => {
         this.triggerPageFlipTransition('israel');
       };
@@ -616,6 +619,12 @@ export class Game2D {
           if (this.scene.showBirthdayLetter) this.scene.showBirthdayLetter = false;
           if (this.scene.showDepartureLetter) this.scene.showDepartureLetter = false;
           if (this.scene.inspectedLandmark) this.scene.inspectedLandmark = null;
+          if (this.scene.activeLandmark && this.scene.activeLandmark.id === 'tsum') {
+            if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken['tsum']) {
+              this.scene.snapshotsTaken['tsum'] = true;
+              this.scene.onLandmarkSnapshot(this.scene.activeLandmark);
+            }
+          }
           if (this.scene.nearbyCat && this.alice) {
             const cat = this.scene.nearbyCat;
             const wasFirstPet = !cat.isPetted;
@@ -758,6 +767,9 @@ export class Game2D {
         this.scene.onTakeoffComplete = () => {
           this.triggerPageFlipTransition('israel');
         };
+        this.scene.onLandmarkSnapshot = (landmark) => {
+          this.triggerPolaroidSnapshot(landmark);
+        };
 
         if (this.flightPageContainer) this.flightPageContainer.classList.add('hidden');
         if (this.gamePageContainer) this.gamePageContainer.classList.remove('hidden');
@@ -767,6 +779,103 @@ export class Game2D {
         // Landing begins on Red Square!
       }
     );
+  }
+
+  triggerPolaroidSnapshot(landmark) {
+    if (!landmark) return;
+    const photoSrc = './assets/polaroids/tsum_pizza.jpg';
+
+    // 1. Play camera shutter sound
+    if (this.audio && this.audio.playCameraShutter) {
+      this.audio.playCameraShutter();
+    }
+
+    // 2. Camera flash overlay
+    const flashEl = document.getElementById('camera-flash-overlay');
+    if (flashEl) {
+      flashEl.classList.add('flash');
+      setTimeout(() => {
+        flashEl.classList.remove('flash');
+      }, 70);
+    }
+
+    // 3. Create the flying polaroid element
+    const container = document.getElementById('polaroid-snapshot-container');
+    if (!container) return;
+
+    const card = document.createElement('div');
+    card.className = 'flying-polaroid';
+    card.innerHTML = `
+      <div class="washi-tape"></div>
+      <div class="polaroid-inner-photo">
+        <img src="${photoSrc}" alt="memory" />
+      </div>
+    `;
+
+    // Center of viewport
+    const startW = Math.min(300, Math.floor(window.innerWidth * 0.40));
+    const startLeft = Math.floor((window.innerWidth - startW) / 2);
+    const startTop = Math.floor((window.innerHeight - startW * 1.05) / 2);
+
+    card.style.left = `${startLeft}px`;
+    card.style.top = `${startTop}px`;
+    card.style.width = `${startW}px`;
+    card.style.transform = 'scale(0.2) rotate(-8deg)';
+    card.style.opacity = '0';
+    card.style.zIndex = '99999';
+
+    container.appendChild(card);
+
+    // Pop into center
+    requestAnimationFrame(() => {
+      card.style.transition = 'transform 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.35s ease';
+      card.style.transform = 'scale(1.0) rotate(-1.5deg)';
+      card.style.opacity = '1';
+    });
+
+    // 4. After 2.0 seconds of viewing in center, fly and pin to background wall!
+    setTimeout(() => {
+      const targetLeft = Math.floor(window.innerWidth * 0.73);
+      const targetTop = Math.floor(window.innerHeight * 0.02);
+      const targetW = Math.min(220, Math.floor(window.innerWidth * 0.22));
+      const targetRotate = 4.5;
+
+      card.style.transition = 'all 1.15s cubic-bezier(0.25, 1, 0.5, 1)';
+      card.style.left = `${targetLeft}px`;
+      card.style.top = `${targetTop}px`;
+      card.style.width = `${targetW}px`;
+      card.style.transform = `scale(0.9) rotate(${targetRotate}deg)`;
+
+      // When flight finishes:
+      setTimeout(() => {
+        const scrapbook = document.querySelector('.scrapbook-container');
+        if (scrapbook) {
+          const wallCard = document.createElement('div');
+          wallCard.className = 'scrapbook-card';
+          wallCard.style.position = 'absolute';
+          wallCard.style.left = '73vw';
+          wallCard.style.top = '2vh';
+          wallCard.style.width = `${targetW}px`;
+          wallCard.style.transform = `rotate(${targetRotate}deg)`;
+          wallCard.style.zIndex = '38';
+          wallCard.innerHTML = `
+            <div class="washi-tape" style="transform: translateX(-50%) rotate(2.5deg);"></div>
+            <div class="polaroid-photo-wrapper">
+              <img src="${photoSrc}" class="photo-real" alt="pin" />
+            </div>
+          `;
+          scrapbook.appendChild(wallCard);
+        }
+
+        if (card.parentNode) {
+          card.parentNode.removeChild(card);
+        }
+
+        if (this.audio && this.audio.playChime) {
+          this.audio.playChime();
+        }
+      }, 1200);
+    }, 2000);
   }
 
   completeFlightAndLandInIsrael() {

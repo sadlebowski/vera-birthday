@@ -1297,3 +1297,86 @@ body.pinterest-desktop {
   color: #ffffff;
 }
 
+/* ==========================================================================
+   CAMERA FLASH OVERLAY & POLAROID SNAPSHOT ANIMATION
+   ========================================================================== */
+
+.camera-flash-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #ffffff;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10000;
+  transition: opacity 0.35s ease-out;
+}
+
+.camera-flash-overlay.flash {
+  opacity: 0.92;
+  transition: opacity 0.04s ease-in;
+}
+
+.polaroid-snapshot-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.flying-polaroid {
+  position: fixed;
+  background: #ffffff;
+  padding: 10px 10px 26px 10px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(255, 182, 193, 0.5);
+  box-shadow: 
+    0 24px 60px rgba(0, 0, 0, 0.4),
+    0 4px 18px rgba(255, 64, 129, 0.28);
+  pointer-events: auto;
+  cursor: pointer;
+  transform-origin: center center;
+  transition: all 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, left, top, width, opacity;
+  box-sizing: border-box;
+}
+
+.flying-polaroid .polaroid-inner-photo {
+  width: 100%;
+  aspect-ratio: 1.35;
+  background: #fff8fc;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flying-polaroid .polaroid-inner-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: auto;
+}
+
+.flying-polaroid .washi-tape {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  width: 76px;
+  height: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(2px);
+  border: 1.5px dashed rgba(255, 126, 187, 0.5);
+  box-shadow: 0 3px 8px rgba(255, 105, 180, 0.25);
+  z-index: 10;
+  pointer-events: none;
+  transform: translateX(-50%) rotate(2.5deg);
+}
+

@@ -249,6 +249,8 @@ export class MoscowScene {
     this.activeLandmark = null;
     this.inspectedLandmark = null;
     this.promptPulse = 0;
+    this.snapshotsTaken = {};
+    this.onLandmarkSnapshot = null;
 
     // Celebration & Departure
     this.fireworks = [];
@@ -718,6 +720,12 @@ export class MoscowScene {
         }
       } else {
         this.inspectedLandmark = this.activeLandmark;
+        if (this.activeLandmark.id === 'tsum') {
+          if (this.onLandmarkSnapshot && !this.snapshotsTaken['tsum']) {
+            this.snapshotsTaken['tsum'] = true;
+            this.onLandmarkSnapshot(this.activeLandmark);
+          }
+        }
         if (this.activeLandmark.type === 'departure') {
           if (this.departurePlane.state === 'waiting') {
             this.departurePlane.state = 'boarding';

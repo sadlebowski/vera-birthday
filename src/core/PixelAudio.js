@@ -437,6 +437,72 @@ export class PixelAudio {
     });
   }
 
+  playCameraShutter() {
+    this.ensureAudioContext();
+    if (!this.audioCtx) return;
+
+    const now = this.audioCtx.currentTime;
+
+    // 1. Initial click (shutter open, 0.025s noise burst + high resonant pop)
+    const bufSize1 = Math.floor(this.audioCtx.sampleRate * 0.025);
+    const buf1 = this.audioCtx.createBuffer(1, bufSize1, this.audioCtx.sampleRate);
+    const d1 = buf1.getChannelData(0);
+    for (let i = 0; i < bufSize1; i++) {
+      d1[i] = (Math.random() * 2 - 1) * (1 - i / bufSize1);
+    }
+    const noise1 = this.audioCtx.createBufferSource();
+    noise1.buffer = buf1;
+    const filter1 = this.audioCtx.createBiquadFilter();
+    filter1.type = 'bandpass';
+    filter1.frequency.setValueAtTime(2200, now);
+    const gain1 = this.audioCtx.createGain();
+    gain1.gain.setValueAtTime(0.5 * this.volume, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+    noise1.connect(filter1);
+    filter1.connect(gain1);
+    gain1.connect(this.audioCtx.destination);
+    noise1.start(now);
+
+    // 2. Second heavier click (shutter close at t = 0.075s)
+    const clickTime = now + 0.075;
+    const bufSize2 = Math.floor(this.audioCtx.sampleRate * 0.04);
+    const buf2 = this.audioCtx.createBuffer(1, bufSize2, this.audioCtx.sampleRate);
+    const d2 = buf2.getChannelData(0);
+    for (let i = 0; i < bufSize2; i++) {
+      d2[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufSize2 * 0.3));
+    }
+    const noise2 = this.audioCtx.createBufferSource();
+    noise2.buffer = buf2;
+    const filter2 = this.audioCtx.createBiquadFilter();
+    filter2.type = 'lowpass';
+    filter2.frequency.setValueAtTime(1400, clickTime);
+    const gain2 = this.audioCtx.createGain();
+    gain2.gain.setValueAtTime(0.55 * this.volume, clickTime);
+    gain2.gain.exponentialRampToValueAtTime(0.001, clickTime + 0.04);
+    noise2.connect(filter2);
+    filter2.connect(gain2);
+    gain2.connect(this.audioCtx.destination);
+    noise2.start(clickTime);
+
+    // 3. Film ejection / motor whirr sound (t = 0.12s to 0.45s)
+    const whirrTime = now + 0.12;
+    const osc = this.audioCtx.createOscillator();
+    const oscGain = this.audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(320, whirrTime);
+    osc.frequency.exponentialRampToValueAtTime(440, whirrTime + 0.30);
+    const oscFilter = this.audioCtx.createBiquadFilter();
+    oscFilter.type = 'lowpass';
+    oscFilter.frequency.setValueAtTime(800, whirrTime);
+    oscGain.gain.setValueAtTime(0.12 * this.volume, whirrTime);
+    oscGain.gain.exponentialRampToValueAtTime(0.001, whirrTime + 0.32);
+    osc.connect(oscFilter);
+    oscFilter.connect(oscGain);
+    oscGain.connect(this.audioCtx.destination);
+    osc.start(whirrTime);
+    osc.stop(whirrTime + 0.35);
+  }
+
   playZeroGWhoosh() {
     this.ensureAudioContext();
     if (!this.audioCtx) return;
