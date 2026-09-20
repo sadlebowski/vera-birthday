@@ -1,13 +1,13 @@
 import { MEMORIES_CONFIG } from '../config/memories.js';
 import { PixelAlice } from '../entities/PixelAlice.js';
-import { SaranskScene } from '../entities/SaranskScene.js?v=20260920_2035';
-import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2035';
-import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2035';
-import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2035';
-import { FlightScene } from '../entities/FlightScene.js?v=20260920_2035';
+import { SaranskScene } from '../entities/SaranskScene.js?v=20260920_2045';
+import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2045';
+import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2045';
+import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2045';
+import { FlightScene } from '../entities/FlightScene.js?v=20260920_2045';
 import { CosmicFloatingOverlay } from '../entities/CosmicFloatingOverlay.js';
 import { InteractiveCakeStage } from '../entities/InteractiveCakeStage.js';
-import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2035';
+import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2045';
 import { PixelInput } from './PixelInput.js';
 import { PixelAudio } from './PixelAudio.js';
 
@@ -104,6 +104,9 @@ export class Game2D {
       }
       this.scene.onTakeoffComplete = () => {
         this.triggerPageFlipTransition('barcelona');
+      };
+      this.scene.onLandmarkSnapshot = (landmark) => {
+        this.triggerPolaroidSnapshot(landmark);
       };
     } else if (this.currentSceneType === 'moscow') {
       this.scene = new MoscowScene(this.config);
@@ -661,8 +664,8 @@ export class Game2D {
               this.scene.inspectedLandmark = targetLm;
             }
 
-            // Trigger snapshot for tsum, rgsu, arc_triomf, fox, or cathedral
-            if (targetLm.id === 'tsum' || targetLm.id === 'rgsu' || targetLm.id === 'arc_triomf' || targetLm.id === 'fox' || targetLm.id === 'cathedral') {
+            // Trigger snapshot for tsum, rgsu, arc_triomf, fox, cathedral, jaffa_clock, or white_city
+            if (targetLm.id === 'tsum' || targetLm.id === 'rgsu' || targetLm.id === 'arc_triomf' || targetLm.id === 'fox' || targetLm.id === 'cathedral' || targetLm.id === 'jaffa_clock' || targetLm.id === 'white_city') {
               const id = targetLm.id;
               if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken[id]) {
                 this.scene.snapshotsTaken[id] = true;
@@ -880,6 +883,26 @@ export class Game2D {
       tapeRotate = 2.5;
     }
 
+    if (landmark.id === 'jaffa_clock') {
+      photoSrc = './assets/polaroids/israel_jaffa.jpg';
+      targetLeftPercent = 0.02;
+      targetLeftVw = '2vw';
+      targetTopPercent = 0.22;
+      targetTopVh = '22vh';
+      targetRotate = -3.5;
+      tapeRotate = -1.5;
+    }
+
+    if (landmark.id === 'white_city') {
+      photoSrc = './assets/polaroids/israel_white_city.jpg';
+      targetLeftPercent = 0.85;
+      targetLeftVw = '85vw';
+      targetTopPercent = 0.18;
+      targetTopVh = '18vh';
+      targetRotate = 3.8;
+      tapeRotate = 1.8;
+    }
+
     // 1. Play camera shutter sound
     if (this.audio && this.audio.playCameraShutter) {
       this.audio.playCameraShutter();
@@ -991,6 +1014,9 @@ export class Game2D {
 
         this.scene.onTakeoffComplete = () => {
           this.triggerPageFlipTransition('barcelona');
+        };
+        this.scene.onLandmarkSnapshot = (landmark) => {
+          this.triggerPolaroidSnapshot(landmark);
         };
 
         if (this.flightPageContainer) this.flightPageContainer.classList.add('hidden');

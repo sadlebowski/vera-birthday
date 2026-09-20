@@ -14,7 +14,7 @@
  * 10. Departure Airliner on sunny runway for the next adventure (x = 2920)
  */
 
-import { PixelCat } from './PixelCat.js?v=20260920_2004';
+import { PixelCat } from './PixelCat.js?v=20260920_2045';
 
 export class IsraelScene {
   constructor(config = {}) {
@@ -258,6 +258,10 @@ export class IsraelScene {
     this.nearbyCat = null;
     this.catsToastTimer = 0;
     this.catsCelebrated = false;
+
+    // Polaroid snapshots taken in Israel (Jaffa Clock Tower & Bauhaus White City)
+    this.snapshotsTaken = {};
+    this.onLandmarkSnapshot = null;
   }
 
   update(delta, alice, input) {
@@ -552,7 +556,7 @@ export class IsraelScene {
     }
 
     let nearest = null;
-    let minDist = 34;
+    let minDist = 70;
 
     for (const lm of this.landmarks) {
       const dist = Math.abs(alice.x - lm.x);
@@ -571,6 +575,16 @@ export class IsraelScene {
 
     if (input && input.consumeInspect() && this.activeLandmark) {
       if (this.audio) this.audio.playInteract();
+
+      // Trigger polaroid photo for jaffa_clock or white_city if not yet taken
+      if (this.activeLandmark.id === 'jaffa_clock' || this.activeLandmark.id === 'white_city') {
+        const id = this.activeLandmark.id;
+        if (this.onLandmarkSnapshot && !this.snapshotsTaken[id]) {
+          this.snapshotsTaken[id] = true;
+          this.onLandmarkSnapshot(this.activeLandmark);
+        }
+      }
+
       if (this.inspectedLandmark && this.inspectedLandmark.id === this.activeLandmark.id) {
         this.inspectedLandmark = null;
         if (this.activeLandmark.type === 'departure') {
