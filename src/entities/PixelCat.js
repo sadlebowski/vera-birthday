@@ -250,12 +250,6 @@ export class PixelCat {
       distToAlice = Math.hypot(alice.x - this.x, (alice.y || this.groundY) - this.groundY);
     }
 
-    // Auto-pet on close contact so the cat immediately joins the train
-    if (!this.isPetted && distToAlice < 24) {
-      this.pet(alice);
-      if (alice && alice.petCat) alice.petCat(this);
-    }
-
     // Passive reaction to Alice: close petting / purring
     if (alice && distToAlice < 34) {
       if (!this.hasPurredForAlice) {

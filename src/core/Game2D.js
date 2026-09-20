@@ -1,13 +1,13 @@
 import { MEMORIES_CONFIG } from '../config/memories.js';
 import { PixelAlice } from '../entities/PixelAlice.js';
-import { SaranskScene } from '../entities/SaranskScene.js';
-import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2000';
-import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2000';
-import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2000';
-import { FlightScene } from '../entities/FlightScene.js?v=20260920_2000';
+import { SaranskScene } from '../entities/SaranskScene.js?v=20260920_2004';
+import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2004';
+import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2004';
+import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2004';
+import { FlightScene } from '../entities/FlightScene.js?v=20260920_2004';
 import { CosmicFloatingOverlay } from '../entities/CosmicFloatingOverlay.js';
 import { InteractiveCakeStage } from '../entities/InteractiveCakeStage.js';
-import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2000';
+import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2004';
 import { PixelInput } from './PixelInput.js';
 import { PixelAudio } from './PixelAudio.js';
 

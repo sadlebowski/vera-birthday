@@ -14,7 +14,7 @@
  * 10. Departure Airliner on sunset runway for the next adventure (x = 2950)
  */
 
-import { PixelCat } from './PixelCat.js';
+import { PixelCat } from './PixelCat.js?v=20260920_2004';
 
 export class BarcelonaScene {
   constructor(config = {}) {

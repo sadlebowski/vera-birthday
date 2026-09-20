@@ -14,7 +14,7 @@
  *   7. Pushkin Park Wrought-Iron Entrance Archway
  * - Minimalist [ F ] interaction prompt with concise titles only
  */
-import { PixelCat } from './PixelCat.js';
+import { PixelCat } from './PixelCat.js?v=20260920_2004';
 
 export class SaranskScene {
   constructor(gameConfig) {

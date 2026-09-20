@@ -16,7 +16,7 @@
  * - Cinematic airplane landing sequence: touchdown on runway, stops early at x = 180, airstairs deploy, Alice disembarks
  * - Minimalist [ F ] interaction system
  */
-import { PixelCat } from './PixelCat.js';
+import { PixelCat } from './PixelCat.js?v=20260920_2004';
 
 export class MoscowScene {
   constructor(gameConfig) {
