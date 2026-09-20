@@ -1,13 +1,13 @@
 import { MEMORIES_CONFIG } from '../config/memories.js';
 import { PixelAlice } from '../entities/PixelAlice.js';
-import { SaranskScene } from '../entities/SaranskScene.js?v=20260920_2004';
-import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2004';
-import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2004';
-import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2004';
-import { FlightScene } from '../entities/FlightScene.js?v=20260920_2004';
+import { SaranskScene } from '../entities/SaranskScene.js?v=20260920_2010';
+import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2010';
+import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2010';
+import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2010';
+import { FlightScene } from '../entities/FlightScene.js?v=20260920_2010';
 import { CosmicFloatingOverlay } from '../entities/CosmicFloatingOverlay.js';
 import { InteractiveCakeStage } from '../entities/InteractiveCakeStage.js';
-import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2004';
+import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2010';
 import { PixelInput } from './PixelInput.js';
 import { PixelAudio } from './PixelAudio.js';
 
@@ -83,6 +83,9 @@ export class Game2D {
       }
       this.scene.onCosmicLeap = (alice) => {
         this.triggerCosmicFinale(alice);
+      };
+      this.scene.onLandmarkSnapshot = (landmark) => {
+        this.triggerPolaroidSnapshot(landmark);
       };
     } else if (this.currentSceneType === 'israel') {
       this.scene = new IsraelScene(this.config);
@@ -655,8 +658,8 @@ export class Game2D {
               this.scene.inspectedLandmark = targetLm;
             }
 
-            // Trigger snapshot for tsum or rgsu
-            if (targetLm.id === 'tsum' || targetLm.id === 'rgsu') {
+            // Trigger snapshot for tsum, rgsu, or arc_triomf
+            if (targetLm.id === 'tsum' || targetLm.id === 'rgsu' || targetLm.id === 'arc_triomf') {
               const id = targetLm.id;
               if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken[id]) {
                 this.scene.snapshotsTaken[id] = true;
@@ -844,6 +847,16 @@ export class Game2D {
       tapeRotate = -2.0;
     }
 
+    if (landmark.id === 'arc_triomf') {
+      photoSrc = './assets/polaroids/barcelona_arc.jpg';
+      targetLeftPercent = 0.84;
+      targetLeftVw = '84vw';
+      targetTopPercent = 0.42;
+      targetTopVh = '42vh';
+      targetRotate = 4.8;
+      tapeRotate = 2.0;
+    }
+
     // 1. Play camera shutter sound
     if (this.audio && this.audio.playCameraShutter) {
       this.audio.playCameraShutter();
@@ -985,6 +998,9 @@ export class Game2D {
         this.cameraX = 0;
         this.scene.onCosmicLeap = (alice) => {
           this.triggerCosmicFinale(alice);
+        };
+        this.scene.onLandmarkSnapshot = (landmark) => {
+          this.triggerPolaroidSnapshot(landmark);
         };
 
         if (this.flightPageContainer) this.flightPageContainer.classList.add('hidden');

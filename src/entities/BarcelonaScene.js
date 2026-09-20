@@ -132,6 +132,8 @@ export class BarcelonaScene {
     this.activeLandmark = null;
     this.inspectedLandmark = null;
     this.promptPulse = 0;
+    this.snapshotsTaken = {};
+    this.onLandmarkSnapshot = null;
 
     // Birthday letter modal
     this.showBirthdayLetter = false;
@@ -462,7 +464,7 @@ export class BarcelonaScene {
     if (!alice || typeof alice !== 'object' || !this.landingComplete) return;
 
     let nearest = null;
-    let minDist = 38;
+    let minDist = 70;
 
     for (const lm of this.landmarks) {
       const dist = Math.abs(alice.x - lm.x);
@@ -481,6 +483,16 @@ export class BarcelonaScene {
 
     if (input && input.consumeInspect() && this.activeLandmark) {
       if (this.audio) this.audio.playInteract();
+
+      // Trigger polaroid photo for Arc de Triomf if not yet taken
+      if (this.activeLandmark.id === 'arc_triomf') {
+        const id = this.activeLandmark.id;
+        if (this.onLandmarkSnapshot && !this.snapshotsTaken[id]) {
+          this.snapshotsTaken[id] = true;
+          this.onLandmarkSnapshot(this.activeLandmark);
+        }
+      }
+
       if (this.inspectedLandmark && this.inspectedLandmark.id === this.activeLandmark.id) {
         this.inspectedLandmark = null;
       } else {
