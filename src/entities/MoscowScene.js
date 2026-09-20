@@ -397,7 +397,8 @@ export class MoscowScene {
 
     if (this.cats) {
       const followingCats = this.cats.filter(c => c.isFollowing);
-      const isDeparture = this.airplane && (this.airplane.state === 'boarding' || this.airplane.state === 'taxi' || this.airplane.state === 'takeoff' || this.airplane.state === 'complete');
+      const dp = this.departurePlane;
+      const isDeparture = dp && (dp.state === 'boarding' || dp.state === 'boarded' || dp.state === 'taxi' || dp.state === 'takeoff');
       const departureSpotX = 2900;
 
       for (const cat of this.cats) {
@@ -1686,7 +1687,7 @@ export class MoscowScene {
       const floatOffset = Math.sin(this.promptPulse * 1.5) * 2;
       const py = Math.round(cat.groundY - 32 + floatOffset);
 
-      const label = cat.isPetted ? '[ E ] ПОГЛАДИТЬ ЕЩЁ' : '[ E ] ПОГЛАДИТЬ';
+      const label = cat.isPetted ? '[ F ] ПОГЛАДИТЬ ЕЩЁ' : '[ F ] ПОГЛАДИТЬ';
 
       ctx.save();
       ctx.font = 'bold 12px "Handjet", "VT323", monospace';

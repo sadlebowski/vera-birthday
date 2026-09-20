@@ -29,7 +29,10 @@ export class FlightScene {
 
     if (this.canvas) {
       const handleTap = (e) => {
-        if (!this.shootingStar || !this.shootingStar.active) return;
+        if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
+          this.shootingStar.catch();
+          return;
+        }
         const rect = this.canvas.getBoundingClientRect();
         const scaleX = this.width / rect.width;
         const scaleY = this.height / rect.height;
@@ -172,10 +175,12 @@ export class FlightScene {
     };
 
     if (this.shootingStar) {
-      this.shootingStar.active = false;
-      this.shootingStar.trail = [];
-      this.shootingStar.burstParticles = [];
-      this.shootingStar.spawnTimer = (this.theme === 'night' || this.theme === 'twilight') ? 2.5 : 9999;
+      if (!this.shootingStar.wishMade) {
+        this.shootingStar.active = false;
+        this.shootingStar.trail = [];
+        this.shootingStar.gameStarted = true;
+        this.shootingStar.spawnTimer = 2.0; // Fly soon during flight!
+      }
     }
   }
 

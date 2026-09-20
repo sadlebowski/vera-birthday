@@ -19,9 +19,10 @@ export class ShootingStar {
     this.burstParticles = [];
 
     // Timing
-    this.spawnTimer = 6.5; // First star appears after ~6.5s of starting
+    this.spawnTimer = 2.5; // First star appears 2.5s after starting!
     this.wishBannerTimer = 0;
-    this.wishMade = false;
+    this.wishMade = false; // Permanent once caught
+    this.gameStarted = false;
     this.pulseTimer = 0;
   }
 
@@ -30,27 +31,28 @@ export class ShootingStar {
   }
 
   spawn(cameraX = 0, viewportWidth = 480) {
+    if (this.wishMade) return;
     this.active = true;
-    this.x = cameraX + viewportWidth * (0.65 + Math.random() * 0.3);
-    this.y = 16 + Math.random() * 36;
-    this.vx = -(180 + Math.random() * 60);
-    this.vy = 52 + Math.random() * 28;
+    this.x = cameraX + viewportWidth * 0.95;
+    this.y = 15 + Math.random() * 25;
+    this.vx = -(115 + Math.random() * 25); // Smooth glide across entire sky (~3.5-4s)
+    this.vy = 32 + Math.random() * 15;
     this.trail = [];
 
-    // Next star interval: 26 to 40 seconds
-    this.spawnTimer = 26 + Math.random() * 14;
+    // Next star interval if missed: only 6 to 8.5 seconds!
+    this.spawnTimer = 6.0 + Math.random() * 2.5;
   }
 
   catch() {
-    if (!this.active) return;
+    if (!this.active || this.wishMade) return;
     this.active = false;
-    this.wishBannerTimer = 4.0;
-    this.wishMade = true;
+    this.wishMade = true; // Permanent: never spawn again!
+    this.wishBannerTimer = 4.5;
 
     // Golden & pink stardust burst
     this.burstParticles = [];
-    for (let i = 0; i < 36; i++) {
-      const angle = (Math.PI * 2 * i) / 36 + (Math.random() - 0.5) * 0.4;
+    for (let i = 0; i < 38; i++) {
+      const angle = (Math.PI * 2 * i) / 38 + (Math.random() - 0.5) * 0.4;
       const speed = 35 + Math.random() * 75;
       this.burstParticles.push({
         x: this.x,
@@ -71,55 +73,64 @@ export class ShootingStar {
   }
 
   handleClickOrTap(screenX, screenY, cameraX = 0) {
-    if (!this.active) return false;
-    const starScreenX = this.x - cameraX;
-    const dist = Math.hypot(screenX - starScreenX, screenY - this.y);
-    // Generous catch radius or anywhere near the star
-    if (dist < 80) {
-      this.catch();
-      return true;
-    }
-    return false;
+    if (!this.active || this.wishMade) return false;
+    // Any click / tap on screen while star is active catches the star!
+    this.catch();
+    return true;
   }
 
   update(delta = 0.016, sceneType = 'saransk', cameraX = 0, input = null, viewportWidth = 480) {
     this.pulseTimer += delta * 4;
 
-    // Check if shooting star should spawn in this scene (allowed in Saransk, Moscow, Barcelona, and Flight)
-    const allowedScenes = ['saransk', 'moscow', 'barcelona', 'flight'];
-    const canSpawn = allowedScenes.includes(sceneType);
+    // If wish is already made, never spawn new stars!
+    if (this.wishMade) {
+      this.active = false;
+    } else {
+      // Allowed in all playable scenes and flight
+      const canSpawn = this.gameStarted && !this.active;
 
-    if (!this.active && canSpawn) {
-      this.spawnTimer -= delta;
-      if (this.spawnTimer <= 0) {
-        this.spawn(cameraX, viewportWidth);
-      }
-    }
-
-    // Active shooting star motion
-    if (this.active) {
-      this.x += this.vx * delta;
-      this.y += this.vy * delta;
-
-      // Add trailing stardust
-      this.trail.push({
-        x: this.x,
-        y: this.y + (Math.random() - 0.5) * 2,
-        alpha: 1.0,
-        size: Math.random() > 0.5 ? 2 : 1,
-        color: Math.random() > 0.35 ? '#fff3c4' : (Math.random() > 0.5 ? '#ffd700' : '#ffb3c6'),
-        life: 0,
-        maxLife: 0.32 + Math.random() * 0.18
-      });
-
-      // Spacebar catch input
-      if (input && (input.isSpacePressed || (input.consumeJump && input.consumeJump()))) {
-        this.catch();
+      if (canSpawn) {
+        this.spawnTimer -= delta;
+        if (this.spawnTimer <= 0) {
+          this.spawn(cameraX, viewportWidth);
+        }
       }
 
-      // Check off-screen
-      if (this.x < cameraX - 60 || this.y > 210) {
-        this.active = false;
+      // Active shooting star motion
+      if (this.active) {
+        this.x += this.vx * delta;
+        this.y += this.vy * delta;
+
+        // Add trailing stardust
+        this.trail.push({
+          x: this.x,
+          y: this.y + (Math.random() - 0.5) * 2,
+          alpha: 1.0,
+          size: Math.random() > 0.5 ? 2 : 1,
+          color: Math.random() > 0.35 ? '#fff3c4' : (Math.random() > 0.5 ? '#ffd700' : '#ffb3c6'),
+          life: 0,
+          maxLife: 0.35 + Math.random() * 0.20
+        });
+
+        // Spacebar / Jump / Action catch input
+        const spacePressed = input && (
+          input.isSpacePressed ||
+          (input.keys && input.keys.space) ||
+          (input.consumeJump && input.consumeJump()) ||
+          (input.consumeAction && input.consumeAction())
+        );
+
+        if (spacePressed) {
+          this.catch();
+        }
+
+        // Check off-screen
+        if (this.x < cameraX - 50 || this.y > 220) {
+          this.active = false;
+          if (!this.wishMade) {
+            this.spawnTimer = 6.0 + Math.random() * 2.5; // Next star comes quickly!
+          }
+        }
       }
     }
 

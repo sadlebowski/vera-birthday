@@ -342,7 +342,7 @@ export class SaranskScene {
 
     if (this.cats) {
       const followingCats = this.cats.filter(c => c.isFollowing);
-      const isDeparture = this.airplane && (this.airplane.state === 'boarding' || this.airplane.state === 'taxi' || this.airplane.state === 'takeoff' || this.airplane.state === 'complete');
+      const isDeparture = this.airplane && (this.airplane.state === 'boarding' || this.airplane.state === 'boarded' || this.airplane.state === 'taxi' || this.airplane.state === 'takeoff');
       const departureSpotX = 1920;
 
       for (const cat of this.cats) {
@@ -1388,7 +1388,7 @@ export class SaranskScene {
       const floatOffset = Math.sin(this.promptPulse * 1.5) * 2;
       const py = Math.round(cat.groundY - 32 + floatOffset);
 
-      const label = cat.isPetted ? '[ E ] ПОГЛАДИТЬ ЕЩЁ' : '[ E ] ПОГЛАДИТЬ';
+      const label = cat.isPetted ? '[ F ] ПОГЛАДИТЬ ЕЩЁ' : '[ F ] ПОГЛАДИТЬ';
 
       ctx.save();
       ctx.font = 'bold 12px "Handjet", "VT323", monospace';

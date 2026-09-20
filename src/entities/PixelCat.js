@@ -163,15 +163,15 @@ export class PixelCat {
     if (this.isFollowing) {
       // 1. Departure sequence: cats gather neatly at tarmac edge and bid farewell
       if (isDeparture && departureSpotX !== null) {
-        const targetX = departureSpotX - (followSlotIndex * 15);
+        const targetX = departureSpotX - (followSlotIndex * 16);
         const diffX = targetX - this.x;
         if (Math.abs(diffX) > 4) {
           this.facing = diffX > 0 ? 1 : -1;
-          const speed = Math.min(85, Math.max(35, Math.abs(diffX) * 2.5));
+          const speed = Math.min(240, Math.max(70, Math.abs(diffX) * 3.0));
           this.x += Math.sign(diffX) * speed * delta;
           this.state = 'walk';
           const walkFrames = [0, 1, 10, 11, 12, 0];
-          const walkStep = Math.floor((this.animTimer / 0.10) % walkFrames.length);
+          const walkStep = Math.floor((this.animTimer / 0.08) % walkFrames.length);
           this.animIndex = walkFrames[walkStep];
         } else {
           this.state = 'sit_watch';
@@ -191,32 +191,44 @@ export class PixelCat {
         const targetX = alice.x + (aliceFacing === 1 ? -slotDist : slotDist);
         const diffX = targetX - this.x;
 
-        if (Math.abs(diffX) > 4) {
-          this.facing = diffX > 0 ? 1 : -1;
-          // Scale speed according to Alice's speed and distance
-          let followSpeed = 60;
+        // If cat is too far off-screen (> 280px away), smoothly catch up so it never gets lost!
+        if (Math.abs(diffX) > 280) {
+          this.x = targetX - Math.sign(diffX) * 90;
+        }
+
+        const absDist = Math.abs(targetX - this.x);
+
+        if (absDist > 3) {
+          this.facing = targetX > this.x ? 1 : -1;
+
+          // Dynamic speed matching Alice:
+          // Alice runs at ~144 px/s, walks at ~81 px/s
+          let followSpeed = 85;
           if (alice.state === 'run') {
-            followSpeed = 120;
+            followSpeed = 160; // Faster than Alice running
           } else if (alice.state === 'walk') {
-            followSpeed = 70;
-          }
-          if (Math.abs(diffX) > 70) {
-            followSpeed = Math.min(150, Math.max(followSpeed, Math.abs(diffX) * 2.6));
+            followSpeed = 95;
           }
 
-          this.x += Math.sign(diffX) * followSpeed * delta;
+          // If lagging behind, sprint much faster to catch up!
+          if (absDist > 25) {
+            followSpeed = Math.min(290, Math.max(followSpeed, 140 + absDist * 2.2));
+          }
+
+          this.x += Math.sign(targetX - this.x) * followSpeed * delta;
           this.state = 'walk';
+
           const walkFrames = [0, 1, 10, 11, 12, 0];
-          const frameDuration = Math.max(0.06, 0.12 - (followSpeed / 150) * 0.06);
+          const frameDuration = Math.max(0.04, 0.11 - (followSpeed / 290) * 0.06);
           const walkStep = Math.floor((this.animTimer / frameDuration) % walkFrames.length);
           this.animIndex = walkFrames[walkStep];
 
           // Playful hop if Alice jumps nearby
-          if (alice.y < this.groundY - 14 && Math.abs(diffX) < 26 && this.state !== 'hop' && Math.random() < 0.08) {
+          if (alice.y < this.groundY - 10 && absDist < 36 && this.state !== 'hop' && Math.random() < 0.12) {
             this.state = 'hop';
             this.hopProgress = 0;
             this.hopStartX = this.x;
-            this.hopTargetX = this.x + this.facing * 16;
+            this.hopTargetX = this.x + this.facing * 18;
           }
         } else {
           // Arrived at slot in line! Sit comfortably and watch
@@ -224,7 +236,7 @@ export class PixelCat {
           this.facing = alice.facing || 1;
           const frameDuration = 0.20;
           this.animIndex = Math.floor((this.animTimer / frameDuration) % 7);
-          if (Math.random() < 0.018) {
+          if (Math.random() < 0.02) {
             this.spawnHeart();
           }
         }
@@ -236,6 +248,12 @@ export class PixelCat {
     let distToAlice = 9999;
     if (alice) {
       distToAlice = Math.hypot(alice.x - this.x, (alice.y || this.groundY) - this.groundY);
+    }
+
+    // Auto-pet on close contact so the cat immediately joins the train
+    if (!this.isPetted && distToAlice < 24) {
+      this.pet(alice);
+      if (alice && alice.petCat) alice.petCat(this);
     }
 
     // Passive reaction to Alice: close petting / purring

@@ -165,6 +165,7 @@ export class Game2D {
     const flightCanvas = document.getElementById('flight-canvas');
     if (flightCanvas) {
       this.flightScene = new FlightScene(flightCanvas);
+      this.flightScene.shootingStar = this.shootingStar;
       this.flightScene.onFlightComplete = () => {
         if (this.pendingTargetScene === 'barcelona') {
           this.completeFlightAndLandInBarcelona();
@@ -311,6 +312,10 @@ export class Game2D {
         if (this.currentSceneType === 'saransk' && this.alice && this.alice.triggerEntrance) {
           this.alice.triggerEntrance();
         }
+
+        if (this.shootingStar) {
+          this.shootingStar.gameStarted = true;
+        }
       });
     };
 
@@ -362,7 +367,10 @@ export class Game2D {
 
     if (this.canvas) {
       const handleCanvasTap = (e) => {
-        if (!this.shootingStar || !this.shootingStar.active) return;
+        if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
+          this.shootingStar.catch();
+          return;
+        }
         const rect = this.canvas.getBoundingClientRect();
         const scaleX = this.width / rect.width;
         const scaleY = this.height / rect.height;
@@ -424,6 +432,9 @@ export class Game2D {
         this.touchControls.classList.remove('hidden');
       }
       this.setCameraView('full');
+      if (this.shootingStar) {
+        this.shootingStar.gameStarted = true;
+      }
     }
 
     if (window.location.search.includes('test_cake=1') || window.location.search.includes('scene=cake')) {
@@ -443,6 +454,9 @@ export class Game2D {
       if (this.flightPageContainer) this.flightPageContainer.classList.remove('hidden');
       this.pageFlipped = true;
       this.setCameraView('full');
+      if (this.shootingStar) {
+        this.shootingStar.gameStarted = true;
+      }
       if (this.flightScene) {
         const urlParams = new URLSearchParams(window.location.search);
         const flightVal = urlParams.get('flight');
