@@ -4,10 +4,10 @@ import { SaranskScene } from '../entities/SaranskScene.js?v=20260920_2045';
 import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2045';
 import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2045';
 import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2045';
-import { FlightScene } from '../entities/FlightScene.js?v=20260920_2045';
+import { FlightScene } from '../entities/FlightScene.js?v=20260920_2050';
 import { CosmicFloatingOverlay } from '../entities/CosmicFloatingOverlay.js';
 import { InteractiveCakeStage } from '../entities/InteractiveCakeStage.js';
-import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2045';
+import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2050';
 import { PixelInput } from './PixelInput.js';
 import { PixelAudio } from './PixelAudio.js';
 
@@ -377,25 +377,53 @@ export class Game2D {
     window.addEventListener('touchstart', handleFirstGesture, { passive: true });
     window.addEventListener('keydown', handleFirstGesture, { passive: true });
 
-    // Global catch for shooting star on click/tap anywhere on screen
-    window.addEventListener('pointerdown', () => {
-      if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
-        this.shootingStar.catch();
+    // Catch shooting star if clicked/tapped directly on it
+    const handleGlobalStarClick = (e) => {
+      if (!this.shootingStar || !this.shootingStar.active || this.shootingStar.wishMade) return;
+
+      const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0] ? e.touches[0].clientX : null);
+      const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0] ? e.touches[0].clientY : null);
+      if (clientX === null || clientY === null) return;
+
+      // If during flight on Page 2:
+      if (this.pageFlipped && this.flightScene && this.flightScene.canvas) {
+        const fc = this.flightScene.canvas;
+        const rect = fc.getBoundingClientRect();
+        if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+          const scaleX = this.flightScene.width / rect.width;
+          const scaleY = this.flightScene.height / rect.height;
+          const clickX = (clientX - rect.left) * scaleX;
+          const clickY = (clientY - rect.top) * scaleY;
+          this.shootingStar.handleClickOrTap(clickX, clickY, 0);
+        }
+        return;
       }
-    }, true);
+
+      // If during ground scenes on main game canvas:
+      if (this.canvas) {
+        const rect = this.canvas.getBoundingClientRect();
+        if (clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom) {
+          const scaleX = this.width / rect.width;
+          const scaleY = this.height / rect.height;
+          const clickX = (clientX - rect.left) * scaleX;
+          const clickY = (clientY - rect.top) * scaleY;
+          this.shootingStar.handleClickOrTap(clickX, clickY, this.cameraX);
+        }
+      }
+    };
+
+    window.addEventListener('pointerdown', handleGlobalStarClick, true);
 
     if (this.canvas) {
       const handleCanvasTap = (e) => {
-        if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
-          this.shootingStar.catch();
-          return;
-        }
         const rect = this.canvas.getBoundingClientRect();
         const scaleX = this.width / rect.width;
         const scaleY = this.height / rect.height;
         const clickX = (e.clientX - rect.left) * scaleX;
         const clickY = (e.clientY - rect.top) * scaleY;
-        this.shootingStar.handleClickOrTap(clickX, clickY, this.cameraX);
+        if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
+          this.shootingStar.handleClickOrTap(clickX, clickY, this.cameraX);
+        }
       };
       this.canvas.addEventListener('click', handleCanvasTap);
       this.canvas.addEventListener('touchstart', (e) => {

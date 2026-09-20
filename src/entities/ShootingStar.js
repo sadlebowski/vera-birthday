@@ -74,9 +74,30 @@ export class ShootingStar {
 
   handleClickOrTap(screenX, screenY, cameraX = 0) {
     if (!this.active || this.wishMade) return false;
-    // Any click / tap on screen while star is active catches the star!
-    this.catch();
-    return true;
+
+    // Hit test against the star head
+    const sx = this.x - cameraX;
+    const sy = this.y;
+    const distToHead = Math.hypot(screenX - sx, screenY - sy);
+
+    // Hit radius: 36px in native 480x270 resolution (~80px on 1080p display)
+    if (distToHead <= 36) {
+      this.catch();
+      return true;
+    }
+
+    // Also allow clicking along recent glowing trail
+    const recentTrail = this.trail.slice(-8);
+    for (const p of recentTrail) {
+      const px = p.x - cameraX;
+      const py = p.y;
+      if (Math.hypot(screenX - px, screenY - py) <= 24) {
+        this.catch();
+        return true;
+      }
+    }
+
+    return false;
   }
 
   update(delta = 0.016, sceneType = 'saransk', cameraX = 0, input = null, viewportWidth = 480) {
@@ -112,16 +133,17 @@ export class ShootingStar {
           maxLife: 0.35 + Math.random() * 0.20
         });
 
-        // Spacebar / Jump / Action catch input
-        const spacePressed = input && (
-          input.isSpacePressed ||
-          (input.keys && input.keys.space) ||
-          (input.consumeJump && input.consumeJump()) ||
-          (input.consumeAction && input.consumeAction())
-        );
+        // Spacebar catch input: ONLY in ground scenes, NEVER in flight!
+        // During flight, the player must specifically click/tap on the star!
+        if (sceneType !== 'flight') {
+          const spacePressed = input && (
+            input.isSpacePressed ||
+            (input.keys && input.keys.space)
+          );
 
-        if (spacePressed) {
-          this.catch();
+          if (spacePressed) {
+            this.catch();
+          }
         }
 
         // Check off-screen

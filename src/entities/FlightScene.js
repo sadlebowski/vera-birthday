@@ -14,7 +14,7 @@
  * - Flight exit: plane throttles up, climbs and zooms completely off-screen right
  * - onFlightComplete callback triggered ONLY AFTER the plane is completely off-screen
  */
-import { ShootingStar } from './ShootingStar.js?v=20260920_2000';
+import { ShootingStar } from './ShootingStar.js?v=20260920_2050';
 
 export class FlightScene {
   constructor(canvas) {
@@ -29,16 +29,14 @@ export class FlightScene {
 
     if (this.canvas) {
       const handleTap = (e) => {
-        if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
-          this.shootingStar.catch();
-          return;
-        }
         const rect = this.canvas.getBoundingClientRect();
         const scaleX = this.width / rect.width;
         const scaleY = this.height / rect.height;
         const clickX = (e.clientX - rect.left) * scaleX;
         const clickY = (e.clientY - rect.top) * scaleY;
-        this.shootingStar.handleClickOrTap(clickX, clickY, 0);
+        if (this.shootingStar && this.shootingStar.active && !this.shootingStar.wishMade) {
+          this.shootingStar.handleClickOrTap(clickX, clickY, 0);
+        }
       };
       this.canvas.addEventListener('click', handleTap);
       this.canvas.addEventListener('touchstart', (e) => {
