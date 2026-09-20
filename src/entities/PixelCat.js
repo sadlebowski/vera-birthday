@@ -41,6 +41,8 @@ export class PixelCat {
 
     this.hasPurredForAlice = false;
     this.isPetted = false;
+    this.isFollowing = false;
+    this.followSlot = 0;
     this.followTimer = 0;
     this.hearts = [];
     this.sparkles = [];
@@ -109,17 +111,17 @@ export class PixelCat {
 
   pet(alice) {
     this.isPetted = true;
-    this.followTimer = 5.5; // Happy follow duration in seconds
+    this.isFollowing = true; // Permanent loyal follower in this city!
     this.state = 'purr';
-    this.stateTimer = 2.0;
+    this.stateTimer = 1.8;
     if (alice) {
       this.facing = alice.x >= this.x ? 1 : -1;
     }
     // Hearts and sparkles burst
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       this.spawnHeart();
     }
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       this.spawnSparkle();
     }
     if (this.audio) {
@@ -130,7 +132,7 @@ export class PixelCat {
     }
   }
 
-  update(delta = 0.016, alice = null) {
+  update(delta = 0.016, alice = null, followSlotIndex = 0, isDeparture = false, departureSpotX = null) {
     this.animTimer += delta;
 
     // Update floating heart particles
@@ -157,32 +159,77 @@ export class PixelCat {
       }
     }
 
-    // Active follow behavior when petted
-    if (this.followTimer > 0 && alice) {
-      this.followTimer -= delta;
-      const targetOffset = (alice.facing || 1) === 1 ? -22 : 22;
-      const targetX = alice.x + targetOffset;
-      const diffX = targetX - this.x;
-
-      if (Math.abs(diffX) > 10) {
-        this.facing = diffX > 0 ? 1 : -1;
-        const followSpeed = Math.min(65, Math.max(22, Math.abs(diffX) * 2.5));
-        this.x += Math.sign(diffX) * followSpeed * delta;
-        this.state = 'walk';
-        const walkFrames = [0, 1, 10, 11, 12, 0];
-        const frameDuration = 0.10;
-        const walkStep = Math.floor((this.animTimer / frameDuration) % walkFrames.length);
-        this.animIndex = walkFrames[walkStep];
-      } else {
-        this.state = 'sit_watch';
-        this.facing = alice.x >= this.x ? 1 : -1;
-        const frameDuration = 0.20;
-        this.animIndex = Math.floor((this.animTimer / frameDuration) % 7);
-        if (Math.random() < 0.03) {
-          this.spawnHeart();
+    // Active loyal follow behavior when petted («Кошачий хвостик»)
+    if (this.isFollowing) {
+      // 1. Departure sequence: cats gather neatly at tarmac edge and bid farewell
+      if (isDeparture && departureSpotX !== null) {
+        const targetX = departureSpotX - (followSlotIndex * 15);
+        const diffX = targetX - this.x;
+        if (Math.abs(diffX) > 4) {
+          this.facing = diffX > 0 ? 1 : -1;
+          const speed = Math.min(85, Math.max(35, Math.abs(diffX) * 2.5));
+          this.x += Math.sign(diffX) * speed * delta;
+          this.state = 'walk';
+          const walkFrames = [0, 1, 10, 11, 12, 0];
+          const walkStep = Math.floor((this.animTimer / 0.10) % walkFrames.length);
+          this.animIndex = walkFrames[walkStep];
+        } else {
+          this.state = 'sit_watch';
+          this.facing = 1; // Facing the departing airplane / cliff
+          this.animIndex = Math.floor((this.animTimer / 0.20) % 7);
+          if (Math.random() < 0.03) {
+            this.spawnHeart();
+          }
         }
+        return;
       }
-      return;
+
+      // 2. Train follow behind Alice
+      if (alice) {
+        const slotDist = 18 + followSlotIndex * 14;
+        const aliceFacing = alice.facing || 1;
+        const targetX = alice.x + (aliceFacing === 1 ? -slotDist : slotDist);
+        const diffX = targetX - this.x;
+
+        if (Math.abs(diffX) > 4) {
+          this.facing = diffX > 0 ? 1 : -1;
+          // Scale speed according to Alice's speed and distance
+          let followSpeed = 60;
+          if (alice.state === 'run') {
+            followSpeed = 120;
+          } else if (alice.state === 'walk') {
+            followSpeed = 70;
+          }
+          if (Math.abs(diffX) > 70) {
+            followSpeed = Math.min(150, Math.max(followSpeed, Math.abs(diffX) * 2.6));
+          }
+
+          this.x += Math.sign(diffX) * followSpeed * delta;
+          this.state = 'walk';
+          const walkFrames = [0, 1, 10, 11, 12, 0];
+          const frameDuration = Math.max(0.06, 0.12 - (followSpeed / 150) * 0.06);
+          const walkStep = Math.floor((this.animTimer / frameDuration) % walkFrames.length);
+          this.animIndex = walkFrames[walkStep];
+
+          // Playful hop if Alice jumps nearby
+          if (alice.y < this.groundY - 14 && Math.abs(diffX) < 26 && this.state !== 'hop' && Math.random() < 0.08) {
+            this.state = 'hop';
+            this.hopProgress = 0;
+            this.hopStartX = this.x;
+            this.hopTargetX = this.x + this.facing * 16;
+          }
+        } else {
+          // Arrived at slot in line! Sit comfortably and watch
+          this.state = 'sit_watch';
+          this.facing = alice.facing || 1;
+          const frameDuration = 0.20;
+          this.animIndex = Math.floor((this.animTimer / frameDuration) % 7);
+          if (Math.random() < 0.018) {
+            this.spawnHeart();
+          }
+        }
+        return;
+      }
     }
 
     // Proximity to Alice

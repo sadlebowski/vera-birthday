@@ -7,6 +7,7 @@ import { BarcelonaScene } from '../entities/BarcelonaScene.js';
 import { FlightScene } from '../entities/FlightScene.js';
 import { CosmicFloatingOverlay } from '../entities/CosmicFloatingOverlay.js';
 import { InteractiveCakeStage } from '../entities/InteractiveCakeStage.js';
+import { ShootingStar } from '../entities/ShootingStar.js';
 import { PixelInput } from './PixelInput.js';
 import { PixelAudio } from './PixelAudio.js';
 
@@ -36,6 +37,9 @@ export class Game2D {
     this.config = MEMORIES_CONFIG;
     this.input = new PixelInput();
     this.audio = new PixelAudio(this.config.playlist);
+
+    // Romantic Shooting Star («Загадай желание»)
+    this.shootingStar = new ShootingStar({ audio: this.audio });
 
     // Overlays for Zero-G space leap and grand birthday cake finale
     this.cosmicOverlay = new CosmicFloatingOverlay({ audio: this.audio });
@@ -355,6 +359,24 @@ export class Game2D {
     window.addEventListener('click', handleFirstGesture, { passive: true });
     window.addEventListener('touchstart', handleFirstGesture, { passive: true });
     window.addEventListener('keydown', handleFirstGesture, { passive: true });
+
+    if (this.canvas) {
+      const handleCanvasTap = (e) => {
+        if (!this.shootingStar || !this.shootingStar.active) return;
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.width / rect.width;
+        const scaleY = this.height / rect.height;
+        const clickX = (e.clientX - rect.left) * scaleX;
+        const clickY = (e.clientY - rect.top) * scaleY;
+        this.shootingStar.handleClickOrTap(clickX, clickY, this.cameraX);
+      };
+      this.canvas.addEventListener('click', handleCanvasTap);
+      this.canvas.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches[0]) {
+          handleCanvasTap(e.touches[0]);
+        }
+      }, { passive: true });
+    }
 
     if (this.interactiveBook) {
       this.interactiveBook.addEventListener('click', (e) => {
@@ -911,6 +933,11 @@ export class Game2D {
         this.confetti.splice(i, 1);
       }
     }
+
+    // 6. Romantic Shooting Star («Загадай желание»)
+    if (this.shootingStar) {
+      this.shootingStar.update(delta, this.currentSceneType, this.cameraX, this.input, this.width);
+    }
   }
 
   render() {
@@ -964,6 +991,11 @@ export class Game2D {
     // 5. LAYER 3: FOREGROUND (Overhanging canopy foliage with 1.15x parallax, foreground streetlamps with 1.25x parallax, fireflies, UI)
     if (this.scene.drawForeground) {
       this.scene.drawForeground(this.ctx, this.cameraX, this.width, this.height, this.alice.x, this.alice.y);
+    }
+
+    // 6. Shooting star & Wish banner in the sky
+    if (this.shootingStar) {
+      this.shootingStar.draw(this.ctx, this.cameraX, this.width);
     }
   }
 

@@ -341,9 +341,14 @@ export class SaranskScene {
     let minCatDist = 9999;
 
     if (this.cats) {
+      const followingCats = this.cats.filter(c => c.isFollowing);
+      const isDeparture = this.airplane && (this.airplane.state === 'boarding' || this.airplane.state === 'taxi' || this.airplane.state === 'takeoff' || this.airplane.state === 'complete');
+      const departureSpotX = 1920;
+
       for (const cat of this.cats) {
         if (this.audio && !cat.audio) cat.setAudio(this.audio);
-        cat.update(delta, alice);
+        const slotIdx = followingCats.indexOf(cat);
+        cat.update(delta, alice, slotIdx >= 0 ? slotIdx : 0, isDeparture, departureSpotX);
 
         if (alice && typeof alice === 'object') {
           const dist = Math.hypot(alice.x - cat.x, (alice.y || this.aliceGroundY) - cat.groundY);

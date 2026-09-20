@@ -14,6 +14,8 @@
  * - Flight exit: plane throttles up, climbs and zooms completely off-screen right
  * - onFlightComplete callback triggered ONLY AFTER the plane is completely off-screen
  */
+import { ShootingStar } from './ShootingStar.js';
+
 export class FlightScene {
   constructor(canvas) {
     this.canvas = canvas;
@@ -21,6 +23,25 @@ export class FlightScene {
     this.ctx.imageSmoothingEnabled = false;
     this.width = canvas.width || 480;
     this.height = canvas.height || 270;
+
+    // Shooting star for night / twilight flights
+    this.shootingStar = new ShootingStar();
+
+    if (this.canvas) {
+      const handleTap = (e) => {
+        if (!this.shootingStar || !this.shootingStar.active) return;
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.width / rect.width;
+        const scaleY = this.height / rect.height;
+        const clickX = (e.clientX - rect.left) * scaleX;
+        const clickY = (e.clientY - rect.top) * scaleY;
+        this.shootingStar.handleClickOrTap(clickX, clickY, 0);
+      };
+      this.canvas.addEventListener('click', handleTap);
+      this.canvas.addEventListener('touchstart', (e) => {
+        if (e.touches && e.touches[0]) handleTap(e.touches[0]);
+      }, { passive: true });
+    }
 
     // Plane state
     this.plane = {
@@ -149,10 +170,21 @@ export class FlightScene {
       vx: quick ? -550 : -350,
       exhaustParticles: []
     };
+
+    if (this.shootingStar) {
+      this.shootingStar.active = false;
+      this.shootingStar.trail = [];
+      this.shootingStar.burstParticles = [];
+      this.shootingStar.spawnTimer = (this.theme === 'night' || this.theme === 'twilight') ? 2.5 : 9999;
+    }
   }
 
   update(delta, input) {
     if (this.isComplete) return;
+
+    if (this.shootingStar) {
+      this.shootingStar.update(delta, 'flight', 0, input, this.width);
+    }
 
     const p = this.plane;
     p.timer += delta;
@@ -678,6 +710,11 @@ export class FlightScene {
       ctx.textAlign = 'center';
       ctx.fillText('▲ / ▼  УПРАВЛЕНИЕ', w / 2, hy + 15);
       ctx.restore();
+    }
+
+    // 6. Romantic Shooting Star in flight
+    if (this.shootingStar) {
+      this.shootingStar.draw(this.ctx, 0, this.width);
     }
   }
 }
