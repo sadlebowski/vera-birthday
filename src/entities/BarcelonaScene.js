@@ -474,6 +474,11 @@ export class BarcelonaScene {
 
     this.activeLandmark = nearest;
 
+    // If player walked away, close inspection automatically
+    if (!this.activeLandmark || (this.inspectedLandmark && this.inspectedLandmark.id !== this.activeLandmark.id)) {
+      this.inspectedLandmark = null;
+    }
+
     if (input && input.consumeInspect() && this.activeLandmark) {
       if (this.audio) this.audio.playInteract();
       if (this.inspectedLandmark && this.inspectedLandmark.id === this.activeLandmark.id) {

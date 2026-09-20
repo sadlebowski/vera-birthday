@@ -709,6 +709,11 @@ export class MoscowScene {
 
     this.activeLandmark = nearest;
 
+    // If player walked away, close inspection automatically
+    if (!this.activeLandmark || (this.inspectedLandmark && this.inspectedLandmark.id !== this.activeLandmark.id)) {
+      this.inspectedLandmark = null;
+    }
+
     // Handle [ F ] inspection
     if (input && input.consumeInspect() && this.activeLandmark) {
       if (this.audio) this.audio.playInteract();
