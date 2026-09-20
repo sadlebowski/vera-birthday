@@ -14,7 +14,7 @@
  * - Flight exit: plane throttles up, climbs and zooms completely off-screen right
  * - onFlightComplete callback triggered ONLY AFTER the plane is completely off-screen
  */
-import { ShootingStar } from './ShootingStar.js?v=20260920_1955';
+import { ShootingStar } from './ShootingStar.js?v=20260920_2000';
 
 export class FlightScene {
   constructor(canvas) {

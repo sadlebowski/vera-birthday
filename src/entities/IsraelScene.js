@@ -1369,13 +1369,14 @@ export class IsraelScene {
     }
 
     // Cat Petting Prompt (minimalist, no box, no frame, no stars)
-    if (this.nearbyCat && !this.showBirthdayLetter && !this.showDepartureLetter) {
+    // Only show prompt for unpetted cats to avoid clutter when cats follow Alice
+    if (this.nearbyCat && !this.nearbyCat.isPetted && !this.showBirthdayLetter && !this.showDepartureLetter) {
       const cat = this.nearbyCat;
       const sx = Math.round(cat.x - cameraX);
       const floatOffset = Math.sin(this.promptPulse * 1.5) * 2;
       const py = Math.round(cat.groundY - 32 + floatOffset);
 
-      const label = cat.isPetted ? '[ F ] ПОГЛАДИТЬ ЕЩЁ' : '[ F ] ПОГЛАДИТЬ';
+      const label = '[ F ] ПОГЛАДИТЬ';
 
       ctx.save();
       ctx.font = 'bold 12px "Handjet", "VT323", monospace';
