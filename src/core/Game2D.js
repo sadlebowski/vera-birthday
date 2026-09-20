@@ -619,9 +619,10 @@ export class Game2D {
           if (this.scene.showBirthdayLetter) this.scene.showBirthdayLetter = false;
           if (this.scene.showDepartureLetter) this.scene.showDepartureLetter = false;
           if (this.scene.inspectedLandmark) this.scene.inspectedLandmark = null;
-          if (this.scene.activeLandmark && this.scene.activeLandmark.id === 'tsum') {
-            if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken['tsum']) {
-              this.scene.snapshotsTaken['tsum'] = true;
+          if (this.scene.activeLandmark && (this.scene.activeLandmark.id === 'tsum' || this.scene.activeLandmark.id === 'rgsu')) {
+            const id = this.scene.activeLandmark.id;
+            if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken[id]) {
+              this.scene.snapshotsTaken[id] = true;
               this.scene.onLandmarkSnapshot(this.scene.activeLandmark);
             }
           }
@@ -783,7 +784,24 @@ export class Game2D {
 
   triggerPolaroidSnapshot(landmark) {
     if (!landmark) return;
-    const photoSrc = './assets/polaroids/tsum_pizza.jpg';
+    
+    let photoSrc = './assets/polaroids/tsum_pizza.jpg';
+    let targetLeftPercent = 0.73;
+    let targetLeftVw = '73vw';
+    let targetTopPercent = 0.02;
+    let targetTopVh = '2vh';
+    let targetRotate = 4.5;
+    let tapeRotate = 2.5;
+
+    if (landmark.id === 'rgsu') {
+      photoSrc = './assets/polaroids/rgsu_classroom.jpg';
+      targetLeftPercent = 0.14;
+      targetLeftVw = '14vw';
+      targetTopPercent = 0.02;
+      targetTopVh = '2vh';
+      targetRotate = -4.2;
+      tapeRotate = -2.0;
+    }
 
     // 1. Play camera shutter sound
     if (this.audio && this.audio.playCameraShutter) {
@@ -835,10 +853,9 @@ export class Game2D {
 
     // 4. After 2.0 seconds of viewing in center, fly and pin to background wall!
     setTimeout(() => {
-      const targetLeft = Math.floor(window.innerWidth * 0.73);
-      const targetTop = Math.floor(window.innerHeight * 0.02);
+      const targetLeft = Math.floor(window.innerWidth * targetLeftPercent);
+      const targetTop = Math.floor(window.innerHeight * targetTopPercent);
       const targetW = Math.min(220, Math.floor(window.innerWidth * 0.22));
-      const targetRotate = 4.5;
 
       card.style.transition = 'all 1.15s cubic-bezier(0.25, 1, 0.5, 1)';
       card.style.left = `${targetLeft}px`;
@@ -853,13 +870,13 @@ export class Game2D {
           const wallCard = document.createElement('div');
           wallCard.className = 'scrapbook-card';
           wallCard.style.position = 'absolute';
-          wallCard.style.left = '73vw';
-          wallCard.style.top = '2vh';
+          wallCard.style.left = targetLeftVw;
+          wallCard.style.top = targetTopVh;
           wallCard.style.width = `${targetW}px`;
           wallCard.style.transform = `rotate(${targetRotate}deg)`;
           wallCard.style.zIndex = '38';
           wallCard.innerHTML = `
-            <div class="washi-tape" style="transform: translateX(-50%) rotate(2.5deg);"></div>
+            <div class="washi-tape" style="transform: translateX(-50%) rotate(${tapeRotate}deg);"></div>
             <div class="polaroid-photo-wrapper">
               <img src="${photoSrc}" class="photo-real" alt="pin" />
             </div>

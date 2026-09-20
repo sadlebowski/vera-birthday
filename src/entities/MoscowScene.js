@@ -720,9 +720,10 @@ export class MoscowScene {
         }
       } else {
         this.inspectedLandmark = this.activeLandmark;
-        if (this.activeLandmark.id === 'tsum') {
-          if (this.onLandmarkSnapshot && !this.snapshotsTaken['tsum']) {
-            this.snapshotsTaken['tsum'] = true;
+        if (this.activeLandmark.id === 'tsum' || this.activeLandmark.id === 'rgsu') {
+          const id = this.activeLandmark.id;
+          if (this.onLandmarkSnapshot && !this.snapshotsTaken[id]) {
+            this.snapshotsTaken[id] = true;
             this.onLandmarkSnapshot(this.activeLandmark);
           }
         }
