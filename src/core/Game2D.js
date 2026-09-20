@@ -1,13 +1,13 @@
 import { MEMORIES_CONFIG } from '../config/memories.js';
 import { PixelAlice } from '../entities/PixelAlice.js';
-import { SaranskScene } from '../entities/SaranskScene.js?v=20260920_2010';
-import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2010';
-import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2010';
-import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2010';
-import { FlightScene } from '../entities/FlightScene.js?v=20260920_2010';
+import { SaranskScene } from '../entities/SaranskScene.js?v=20260920_2026';
+import { MoscowScene } from '../entities/MoscowScene.js?v=20260920_2026';
+import { IsraelScene } from '../entities/IsraelScene.js?v=20260920_2026';
+import { BarcelonaScene } from '../entities/BarcelonaScene.js?v=20260920_2026';
+import { FlightScene } from '../entities/FlightScene.js?v=20260920_2026';
 import { CosmicFloatingOverlay } from '../entities/CosmicFloatingOverlay.js';
 import { InteractiveCakeStage } from '../entities/InteractiveCakeStage.js';
-import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2010';
+import { ShootingStar } from '../entities/ShootingStar.js?v=20260920_2026';
 import { PixelInput } from './PixelInput.js';
 import { PixelAudio } from './PixelAudio.js';
 
@@ -132,6 +132,9 @@ export class Game2D {
       this.alice.y = this.scene.aliceGroundY || 224;
       this.scene.onTakeoffComplete = () => {
         this.triggerPageFlipTransition('moscow');
+      };
+      this.scene.onLandmarkSnapshot = (landmark) => {
+        this.triggerPolaroidSnapshot(landmark);
       };
     }
 
@@ -658,8 +661,8 @@ export class Game2D {
               this.scene.inspectedLandmark = targetLm;
             }
 
-            // Trigger snapshot for tsum, rgsu, or arc_triomf
-            if (targetLm.id === 'tsum' || targetLm.id === 'rgsu' || targetLm.id === 'arc_triomf') {
+            // Trigger snapshot for tsum, rgsu, arc_triomf, fox, or cathedral
+            if (targetLm.id === 'tsum' || targetLm.id === 'rgsu' || targetLm.id === 'arc_triomf' || targetLm.id === 'fox' || targetLm.id === 'cathedral') {
               const id = targetLm.id;
               if (this.scene.onLandmarkSnapshot && !this.scene.snapshotsTaken[id]) {
                 this.scene.snapshotsTaken[id] = true;
@@ -855,6 +858,26 @@ export class Game2D {
       targetTopVh = '42vh';
       targetRotate = 4.8;
       tapeRotate = 2.0;
+    }
+
+    if (landmark.id === 'fox') {
+      photoSrc = './assets/polaroids/saransk_fox.jpg';
+      targetLeftPercent = 0.03;
+      targetLeftVw = '3vw';
+      targetTopPercent = 0.68;
+      targetTopVh = '68vh';
+      targetRotate = -4.5;
+      tapeRotate = -2.0;
+    }
+
+    if (landmark.id === 'cathedral') {
+      photoSrc = './assets/polaroids/saransk_ushakov.jpg';
+      targetLeftPercent = 0.82;
+      targetLeftVw = '82vw';
+      targetTopPercent = 0.72;
+      targetTopVh = '72vh';
+      targetRotate = 5.2;
+      tapeRotate = 2.5;
     }
 
     // 1. Play camera shutter sound

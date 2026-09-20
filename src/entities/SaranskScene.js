@@ -222,6 +222,8 @@ export class SaranskScene {
     this.inspectedLandmark = null;
     this.promptPulse = 0;
     this.archGlowTimer = 0;
+    this.snapshotsTaken = {};
+    this.onLandmarkSnapshot = null;
 
     // Cat petting gameplay state
     this.nearbyCat = null;
@@ -473,11 +475,11 @@ export class SaranskScene {
       }
     }
 
-    // 2. Check proximity to landmarks (only trigger when standing directly at landmark)
+    // 2. Check proximity to landmarks
     let foundNearby = null;
     for (const lm of this.landmarks) {
       const dist = Math.abs(aliceX - lm.x);
-      if (dist < 26) {
+      if (dist < 65) {
         foundNearby = lm;
         break;
       }
@@ -494,6 +496,16 @@ export class SaranskScene {
     if (input && input.consumeInspect()) {
       if (this.activeLandmark) {
         if (this.audio) this.audio.playInteract();
+
+        // Trigger polaroid photo for Fox monument or Ushakov cathedral if not yet taken
+        if (this.activeLandmark.id === 'fox' || this.activeLandmark.id === 'cathedral') {
+          const id = this.activeLandmark.id;
+          if (this.onLandmarkSnapshot && !this.snapshotsTaken[id]) {
+            this.snapshotsTaken[id] = true;
+            this.onLandmarkSnapshot(this.activeLandmark);
+          }
+        }
+
         if (this.inspectedLandmark && this.inspectedLandmark.id === this.activeLandmark.id) {
           this.inspectedLandmark = null; // Toggle off
         } else {
